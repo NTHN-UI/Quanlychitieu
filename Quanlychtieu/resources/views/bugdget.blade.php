@@ -148,7 +148,6 @@
                 <div class="card-body">
                     <h5 class="card-title">Đặt ngân sách</h5>
                     <ul id="budget-list" class="list-group">
-
                     </ul>
                     <div id="budget-alert" class="mt-3"></div> <!-- Nơi hiển thị cảnh báo -->
                 </div>
@@ -201,39 +200,122 @@
     </div>
 
     <script>
-        // Budget Management
-const budgetForm = document.getElementById('budget-form');
+        
+        const budgetForm = document.getElementById('budget-form');
 const budgetList = document.getElementById('budget-list');
+const budgetAlert = document.getElementById('budget-alert');
 
-// Hàm định dạng số tiền với dấu phẩy khi nhập
+// Danh sách các icon tương ứng với các danh mục
+const categoryIcons = {
+    "🍔|Ăn uống": "🍔",
+    "🛍️|Mua sắm": "🛍️",
+    "🎮|Giải trí": "🎮",
+    "📚|Học tập": "📚",
+    "🛒|Chợ, siêu thị": "🛒",
+    "🚗|Di chuyển": "🚗",
+    "💅|Làm đẹp": "💅",
+    "❤️|Sức khỏe": "❤️",
+    "🎁|Từ thiện": "🎁",
+    "💳|Trả nợ": "💳",
+    "🧾|Hóa đơn": "🧾",
+    "🏠|Nhà cửa": "🏠",
+    "👨‍👩‍👧‍👦|Người thân": "👨‍👩‍👧‍👦",
+};
+// Hàm định dạng số tiền với dấu phẩy khi người dùng nhập
 const formatCurrencyInput = (input) => {
     input.addEventListener('input', (e) => {
         let value = e.target.value.replace(/,/g, ''); // Loại bỏ dấu phẩy trước
         if (!isNaN(value)) {
-            e.target.value = parseInt(value, 10).toLocaleString('en-US'); // Thêm dấu phẩy
+            // Định dạng lại số với dấu phẩy
+            e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Thêm dấu phẩy
         }
     });
 };
 
-// Lưu ngân sách với định dạng chuỗi có dấu phẩy
+// Áp dụng hàm trên cho trường nhập số tiền
+const budgetAmountInput = document.getElementById('budget-amount');
+formatCurrencyInput(budgetAmountInput);
+
+
 const saveBudgetToLocalStorage = (category, formattedAmount) => {
     const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
-    budgets[category] = formattedAmount; // Lưu dữ liệu đã định dạng
+
+    // Tách phần tên danh mục (bỏ icon)
+    const categoryName = category.includes('|') ? category.split('|')[1] : category;
+
+    budgets[categoryName] = formattedAmount; // Lưu chỉ tên danh mục và số tiền
     localStorage.setItem('budgets', JSON.stringify(budgets));
 };
 
-// Tải ngân sách từ LocalStorage
-const loadBudgetsFromLocalStorage = () => {
-    const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
-    budgetList.innerHTML = '';
-    for (const [category, formattedAmount] of Object.entries(budgets)) {
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.textContent = `${category.split('|')[1]}: ${formattedAmount} VND`;
-        budgetList.appendChild(li);
+
+const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');  // Thêm dấu phẩy ở mỗi ba chữ số
+};
+// Hàm lấy ngân sách và tính toán cảnh báo
+const checkBudgetAndDisplayAlert = () => {
+    const budgets = JSON.parse(localStorage.getItem('budgets')) || {}; // Lấy ngân sách từ localStorage
+    const categoryExpenses = JSON.parse(localStorage.getItem('categoryExpenses')) || {}; // Lấy chi tiêu từ localStorage
+    const budgetAlert = document.getElementById('budget-alert'); // Vị trí hiển thị cảnh báo
+
+    let alertMessage = '';
+
+    // Lặp qua các danh mục chi tiêu trong categoryExpenses
+    for (const [category, expenseAmount] of Object.entries(categoryExpenses)) {
+        const expenseValue = parseFloat(expenseAmount.replace(/,/g, '')) || 0; // Tổng chi tiêu thực tế
+        const budgetAmount = parseFloat((budgets[category] || '0').replace(/,/g, '')) || 0; // Ngân sách đã đặt (hoặc 0 nếu không có)
+
+        if (budgetAmount > 0 && expenseValue > budgetAmount) {
+            // Nếu vượt ngân sách, tạo thông báo
+            const categoryName = category.includes('|') ? category.split('|')[1] : category; // Lấy tên danh mục
+            const icon = categoryIcons[category] || ''; // Lấy icon của danh mục
+            alertMessage += `
+                <p>${icon} <strong>${categoryName}</strong> vượt ngân sách! 
+                Chi tiêu: <strong>${expenseAmount}</strong> VND, 
+                Ngân sách: <strong>${formatCurrency(budgetAmount)}</strong> VND.</p>`;
+        }
+    }
+
+    // Hiển thị thông báo nếu có
+    if (alertMessage) {
+        budgetAlert.innerHTML = `
+            <div class="alert alert-danger">
+                ${alertMessage}
+            </div>`;
+    } else {
+        budgetAlert.innerHTML = ''; // Xóa thông báo nếu không vượt ngân sách
     }
 };
 
+
+
+
+
+
+const loadBudgetsFromLocalStorage = () => {
+    const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
+    budgetList.innerHTML = ''; // Xóa danh sách cũ
+
+    for (const [category, amount] of Object.entries(budgets)) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+        // Hiển thị tên danh mục và số tiền + "VND" gọn gàng
+        li.innerHTML = `
+            <span>${category}</span>
+            <span style="white-space: nowrap;">${formatCurrency(amount)} VND</span>
+        `;
+        budgetList.appendChild(li);
+    }
+
+    checkBudgetAndDisplayAlert(); // Kiểm tra ngân sách
+};
+
+
+// Gọi kiểm tra ngân sách khi tải trang
+document.addEventListener('DOMContentLoaded', () => {
+    loadBudgetsFromLocalStorage();
+});
+// Xử lý khi lưu ngân sách
 budgetForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const category = document.getElementById('budget-category').value;
@@ -243,12 +325,12 @@ budgetForm.addEventListener('submit', (e) => {
     budgetForm.reset();
 });
 
-// Định dạng trường nhập số tiền
-const budgetAmountInput = document.getElementById('budget-amount');
-formatCurrencyInput(budgetAmountInput);
+
 
 // Load ngân sách khi tải trang
 loadBudgetsFromLocalStorage();
+
+
 
 // Forecast Spending
 const forecastList = document.getElementById('forecast-list');
@@ -273,7 +355,6 @@ const loadForecastFromLocalStorage = () => {
         forecastList.appendChild(li);
     }
 };
-
 
 loadForecastFromLocalStorage();
 
@@ -314,84 +395,25 @@ formatCurrencyInput(goalAmountInput);
 // Load mục tiêu khi tải trang
 loadGoalsFromLocalStorage();
 
-const calculateTotalExpenses = () => {
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    const categoryExpenses = {};
-
-    // Duyệt qua từng giao dịch và tính tổng chi tiêu theo danh mục
-    transactions.forEach(tx => {
-        if (tx.type === 'expense' && tx.amount) {
-            const amount = parseFloat(String(tx.amount).replace(/,/g, '')) || 0; // Đảm bảo tx.amount là chuỗi
-            const category = tx.category || 'Khác'; // Đặt tên mặc định nếu không có danh mục
-            categoryExpenses[category] = (categoryExpenses[category] || 0) + amount;
-        }
-    });
-
-    return categoryExpenses;
-};
-
-
-const checkBudgetAndDisplayAlert = () => {
-    const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
-    const totalExpenses = calculateTotalExpenses();
-    let alertMessage = '';
-
-    // So sánh từng danh mục
-    for (const [category, expense] of Object.entries(totalExpenses)) {
-        const budgetAmount = parseFloat((budgets[category] || '0').replace(/,/g, '')) || 0;
-        if (expense > budgetAmount) {
-            const categoryName = category.split('|')[1] || 'Danh mục không xác định';
-            alertMessage = `Chi tiêu ${categoryName} vượt ngân sách.`;
-            break; // Dừng kiểm tra sau khi tìm thấy một danh mục vượt ngân sách
-        }
-    }
-
-    // Hiển thị thông báo một lần duy nhất
-    const budgetAlert = document.getElementById('budget-alert');
-    if (budgetAlert) {
-        budgetAlert.innerHTML = alertMessage || `Tất cả chi tiêu đều trong ngân sách!`;
-    } else {
-        console.error('Không tìm thấy phần tử có ID "budget-alert".');
-    }
-};
+document.addEventListener('DOMContentLoaded', () => {
+    loadBudgetsFromLocalStorage(); // Hiển thị ngân sách
+    checkBudgetAndDisplayAlert(); // Kiểm tra và hiển thị cảnh báo
+});
 
 
 
-    // Gọi kiểm tra ngân sách khi tải trang
-    document.addEventListener('DOMContentLoaded', () => {
-        checkBudgetAndDisplayAlert();
-    });
-    const cleanTransactions = () => {
-    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    transactions = transactions.map(tx => {
-        if (typeof tx.amount !== 'string') {
-            tx.amount = String(tx.amount || '0'); // Chuyển đổi amount thành chuỗi
-        }
-        return tx;
-    });
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-};
+budgetForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-// Gọi hàm làm sạch trước khi sử dụng
-cleanTransactions();
-const saveTransactionToLocalStorage = (transaction) => {
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    transaction.amount = String(transaction.amount || '0'); // Đảm bảo amount là chuỗi
-    transactions.push(transaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-};
+    const category = document.getElementById('budget-category').value; // Lấy danh mục đầy đủ (có icon)
+    const amount = document.getElementById('budget-amount').value;
+
+    saveBudgetToLocalStorage(category, amount); // Gọi hàm lưu ngân sách (tự tách icon)
+    loadBudgetsFromLocalStorage(); // Tải lại danh sách ngân sách
+    budgetForm.reset(); // Reset form
+});
 
 
-    // Kiểm tra ngân sách sau khi lưu ngân sách mới
-    document.getElementById('budget-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const category = document.getElementById('budget-category').value;
-        const amount = document.getElementById('budget-amount').value; // Lấy dữ liệu ngân sách mới
-        saveBudgetToLocalStorage(category, amount); // Lưu ngân sách vào LocalStorage
-        loadBudgetsFromLocalStorage(); // Cập nhật danh sách ngân sách
-        checkBudgetAndDisplayAlert(); // Cập nhật cảnh báo
-        budgetForm.reset(); // Reset form
-    });
 
     </script>
 </body>
