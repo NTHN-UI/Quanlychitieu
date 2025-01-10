@@ -191,10 +191,10 @@
         <nav>
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="dashboard.blade.php" class="nav-link active">Dashboard</a></li>
-                <li class="nav-item"><a href="expense.blade.php" class="nav-link">Chi tiêu</a></li>
+                <li class="nav-item"><a href="expense.blade.php" class="nav-link">Thu chi</a></li>
                 <li class="nav-item"><a href="transaction.blade.php" class="nav-link">Sổ giao dịch</a></li>
                 <li class="nav-item"><a href="remind.blade.php" class="nav-link">Nhắc nhở</a></li>
-                <li class="nav-item"><a href="bugdget.blade.php" class="nav-link">Ngân sác</a></li>
+                <li class="nav-item"><a href="bugdget.blade.php" class="nav-link">Ngân sácH</a></li>
                 <li class="nav-item"><a href="setting.blade.php" class="nav-link">Cài đặt</a></li>
             </ul>
         </nav>
@@ -203,9 +203,7 @@
                 <!-- Month Navigation -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <span id="prev-month">&lt;</span>
-                    <select id="month-selector" class="form-select">
-                        <!-- Tháng sẽ được thêm động trong JavaScript -->
-                    </select>
+                    
                     <span id="next-month">&gt;</span>
                 </div>
                 <!-- Income and Expense Summary -->

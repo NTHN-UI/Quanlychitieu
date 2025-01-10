@@ -47,7 +47,22 @@
             background: rgba(255, 255, 255, 0.4);
             font-weight: bold;
         }
+        /* Month Navigation */
+        #prev-budget-month,
+            #next-budget-month {
+                font-size: 30px;
+                color: #4e54c8;
+                cursor: pointer;
+                transition: color 0.3s, transform 0.3s;
+            }
 
+            #prev-budget-month:hover,
+            #next-budget-month:hover {
+                color: #3b3ccf;
+                transform: scale(1.2);
+            }
+
+          
         .main-content {
                 margin-left: 240px;
                 /* Space for fixed sidebar */
@@ -97,7 +112,7 @@
     <nav>
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="dashboard.blade.php" class="nav-link">Dashboard</a></li>
-                <li class="nav-item"><a href="expense.blade.php" class="nav-link">Chi tiêu</a></li>
+                <li class="nav-item"><a href="expense.blade.php" class="nav-link">Thu chi</a></li>
                 <li class="nav-item"><a href="transaction.blade.php" class="nav-link">Sổ giao dịch</a></li>
                 <li class="nav-item"><a href="remind.blade.php" class="nav-link">Nhắc nhở</a></li>
                 <li class="nav-item"><a href="bugdget.blade.php" class="nav-link active">Ngân sách</a></li>
@@ -364,6 +379,26 @@ const generateForecast = () => {
     }
 };
 
+const addCustomCategoriesToDropdown = () => {
+    const budgetCategoryDropdown = document.getElementById('budget-category');
+    const savedCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
+
+    // Lọc ra các danh mục đã cố định để tránh trùng lặp
+    const existingCategories = Array.from(budgetCategoryDropdown.options).map(option => option.textContent.trim());
+
+    // Thêm các danh mục từ `localStorage`
+    savedCategories.forEach(category => {
+        if (category.type === 'expense') { // Chỉ thêm danh mục chi tiêu
+            const categoryText = `${category.icon} ${category.name}`;
+            if (!existingCategories.includes(categoryText)) { // Kiểm tra xem đã tồn tại hay chưa
+                const option = document.createElement('option');
+                option.value = `${category.icon}|${category.name}`;
+                option.textContent = categoryText;
+                budgetCategoryDropdown.appendChild(option);
+            }
+        }
+    });
+};
 
 
 
@@ -371,7 +406,8 @@ const generateForecast = () => {
 document.addEventListener('DOMContentLoaded', () => {
     renderMonthHeader();
     loadBudgetsFromLocalStorage();
-    checkBudgetAndDisplayAlert(); // Kiểm tra cảnh báo khi tải trang
+    checkBudgetAndDisplayAlert(); 
+    addCustomCategoriesToDropdown();// Kiểm tra cảnh báo khi tải trang
     generateForecast();
 });
 

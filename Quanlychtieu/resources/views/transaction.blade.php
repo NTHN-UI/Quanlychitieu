@@ -174,7 +174,7 @@
     <nav>
         <ul class="nav flex-column">
             <li class="nav-item"><a href="dashboard.blade.php" class="nav-link">Dashboard</a></li>
-            <li class="nav-item"><a href="expense.blade.php" class="nav-link">Chi tiêu</a></li>
+            <li class="nav-item"><a href="expense.blade.php" class="nav-link">Thu chi</a></li>
             <li class="nav-item"><a href="transaction.blade.php" class="nav-link active">Sổ giao dịch</a></li>
             <li class="nav-item"><a href="remind.blade.php" class="nav-link">Nhắc nhở</a></li>
             <li class="nav-item"><a href="bugdget.blade.php" class="nav-link ">Ngân sách</a></li>
@@ -374,17 +374,73 @@ const renderTransactions = () => {
     calculateTotalExpenses();
 };
 
-const handleDeleteTransaction = (index) => {
+const handleDeleteTransaction = (filteredIndex) => {
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
-    const transaction = transactions[index];
+    const categoryExpenses = JSON.parse(localStorage.getItem("categoryExpenses")) || {};
+    const filteredTransactions = transactions.filter(tx => {
+        const txDate = new Date(tx.date);
+        return (
+            txDate.getMonth() + 1 === currentMonthIndex &&
+            txDate.getFullYear() === currentYear
+        );
+    });
+
+    const transaction = filteredTransactions[filteredIndex]; // Giao dịch hiển thị trên giao diện
 
     if (confirm(`Bạn có chắc chắn muốn xóa giao dịch: "${transaction.description}"?`)) {
-        transactions.splice(index, 1);
-        localStorage.setItem("transactions", JSON.stringify(transactions));
-        calculateTotalExpenses();
-        alert("Giao dịch đã được xóa thành công!");
+        // Xác định vị trí chính xác của giao dịch trong danh sách gốc
+        const transactionIndex = transactions.findIndex(tx =>
+            tx.date === transaction.date &&
+            tx.type === transaction.type &&
+            tx.category === transaction.category &&
+            tx.amount === transaction.amount
+        );
+
+        if (transactionIndex !== -1) {
+            // Xóa giao dịch khỏi danh sách gốc
+            transactions.splice(transactionIndex, 1);
+            localStorage.setItem("transactions", JSON.stringify(transactions));
+
+            // Xóa tổng chi tiêu khỏi categoryExpenses
+            const transactionDate = new Date(transaction.date);
+            const transactionMonth = transactionDate.getMonth() + 1; // Tháng từ 1-12
+            const transactionYear = transactionDate.getFullYear();
+            const monthKey = `${transactionMonth}-${transactionYear}`;
+            const categoryKey = `${transaction.icon || "💰"} ${transaction.category}`;
+
+            if (categoryExpenses[monthKey] && categoryExpenses[monthKey][categoryKey]) {
+                const currentAmount = parseFloat(
+                    categoryExpenses[monthKey][categoryKey].toString().replace(/,/g, '')
+                ) || 0;
+                const transactionAmount = parseFloat(transaction.amount.replace(/,/g, '')) || 0;
+
+                const updatedAmount = currentAmount - transactionAmount;
+
+                if (updatedAmount > 0) {
+                    categoryExpenses[monthKey][categoryKey] = updatedAmount.toLocaleString('en-US');
+                } else {
+                    delete categoryExpenses[monthKey][categoryKey];
+
+                    if (Object.keys(categoryExpenses[monthKey]).length === 0) {
+                        delete categoryExpenses[monthKey];
+                    }
+                }
+
+                localStorage.setItem("categoryExpenses", JSON.stringify(categoryExpenses));
+            }
+
+            // Cập nhật lại giao diện
+            renderTransactions();
+            calculateTotalExpenses();
+            checkBudgetAndDisplayAlert();
+
+            alert("Giao dịch đã được xóa thành công!");
+        } else {
+            alert("Không tìm thấy giao dịch trong danh sách gốc!");
+        }
     }
 };
+
 
 const switchMonth = (direction) => {
     currentMonthIndex += direction;
@@ -400,6 +456,7 @@ const switchMonth = (direction) => {
     renderTransactions();
     calculateTotalExpenses();
     checkBudgetAndDisplayAlert();
+  
 };
 
 document.getElementById("prev-month").addEventListener("click", () => switchMonth(-1));

@@ -124,7 +124,7 @@
 <nav>
         <ul class="nav flex-column">
             <li class="nav-item"><a href="dashboard.blade.php" class="nav-link" id="nav-dashboard">Dashboard</a></li>
-            <li class="nav-item"><a href="expense.blade.php" class="nav-link" id="nav-expense">Chi tiêu</a></li>
+            <li class="nav-item"><a href="expense.blade.php" class="nav-link" id="nav-expense">Thu chi</a></li>
             <li class="nav-item"><a href="transaction.blade.php" class="nav-link" id="nav-transaction">Sổ giao dịch</a></li>
             <li class="nav-item"><a href="remind.blade.php" class="nav-link" id="nav-remind">Nhắc nhở</a></li>
             <li class="nav-item"><a href="bugdget.blade.php" class="nav-link ">Ngân sách</a></li>
