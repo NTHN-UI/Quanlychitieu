@@ -8,31 +8,56 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            background: url('https://source.unsplash.com/1920x1080/?finance,money') no-repeat center center/cover;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
+
         .card {
             width: 400px;
-            border-radius: 10px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
         }
+
         .card-body {
-            padding: 20px;
+            padding: 25px;
         }
+
         .form-control {
-            border-radius: 10px;
+            border-radius: 15px;
         }
+
         .btn-primary {
             background: linear-gradient(135deg, #4e54c8, #8f94fb);
             border: none;
+            border-radius: 15px;
         }
+
         .btn-primary:hover {
             background: linear-gradient(135deg, #3b3ccf, #4e54c8);
         }
+
         .form-switch {
             margin-top: 20px;
+        }
+
+        .form-switch a {
+            color: #4e54c8;
+            text-decoration: none;
+        }
+
+        .form-switch a:hover {
+            text-decoration: underline;
+        }
+
+        h4.card-title {
+            font-weight: bold;
+            color: #4e54c8;
         }
     </style>
 </head>
@@ -40,7 +65,7 @@
 
     <div class="card shadow-lg">
         <div class="card-body">
-            <h4 class="card-title text-center">Quản lý Chi Tiêu - Đăng Ký</h4>
+            <h4 class="card-title text-center">Đăng Ký Tài Khoản</h4>
             <form id="register-form">
                 <div class="mb-3">
                     <label for="register-name" class="form-label">Họ và Tên</label>
@@ -69,42 +94,41 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('register-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const name = document.getElementById('register-name').value.trim();
-    const email = document.getElementById('register-email').value.trim();
-    const password = document.getElementById('register-password').value.trim();
-    const confirmPassword = document.getElementById('register-confirm-password').value.trim();
+            e.preventDefault();
 
-    if (!name || !email || !password || !confirmPassword) {
-        alert('Vui lòng điền đầy đủ thông tin.');
-        return;
-    }
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const confirmPassword = document.getElementById('register-confirm-password').value.trim();
 
-    if (password !== confirmPassword) {
-        alert('Mật khẩu không khớp.');
-        return;
-    }
+            if (!name || !email || !password || !confirmPassword) {
+                alert('Vui lòng điền đầy đủ thông tin.');
+                return;
+            }
 
-    // Lấy danh sách người dùng từ localStorage
-    const users = JSON.parse(localStorage.getItem('users')) || {};
+            if (password !== confirmPassword) {
+                alert('Mật khẩu không khớp.');
+                return;
+            }
 
-    // Kiểm tra xem email đã tồn tại chưa
-    if (users[email]) {
-        alert('Email đã được đăng ký. Vui lòng sử dụng email khác.');
-        return;
-    }
+            // Lấy danh sách người dùng từ localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || {};
 
-    // Lưu thông tin người dùng vào localStorage
-    users[email] = { name, password };
-    localStorage.setItem('users', JSON.stringify(users));
+            // Kiểm tra xem email đã tồn tại chưa
+            if (users[email]) {
+                alert('Email đã được đăng ký. Vui lòng sử dụng email khác.');
+                return;
+            }
 
-    alert('Đăng ký thành công! Chuyển đến trang đăng nhập.');
+            // Lưu thông tin người dùng vào localStorage
+            users[email] = { name, password };
+            localStorage.setItem('users', JSON.stringify(users));
 
-    // Chuyển sang trang đăng nhập
-    window.location.href = 'login.blade.php';
-});
+            alert('Đăng ký thành công! Chuyển đến trang đăng nhập.');
 
-
+            // Chuyển sang trang đăng nhập
+            window.location.href = 'login.blade.php';
+        });
     </script>
 </body>
 </html>

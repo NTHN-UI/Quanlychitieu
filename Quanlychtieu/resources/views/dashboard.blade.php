@@ -6,9 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Personal Finance Dashboard</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
         <style>
             /* General Styles */
@@ -20,6 +18,93 @@
                 /* Màu nền tổng thể */
             }
 
+            header {
+                position: fixed; /* Giữ cố định */
+    top: 0; /* Đặt ở trên cùng */
+    left: 0; /* Căn bên trái */
+    width: 100%; /* Phủ toàn bộ chiều ngang */
+    height: 60px; /* Chiều cao của header */
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Ưu tiên hiển thị trên các thành phần khác */
+    }
+
+    header .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    header .user-menu span {
+        font-weight: bold;
+    }
+
+    header .user-menu i {
+        font-size: 1.2rem;
+    }
+    #dropdown-menu {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: linear-gradient(135deg, #ffffff, #f7f9fc); /* Gradient nhẹ */
+    border-radius: 12px; /* Góc bo tròn lớn hơn */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Đổ bóng mềm mại */
+    display: none; /* Ẩn dropdown mặc định */
+    z-index: 1001; /* Đảm bảo hiển thị trên mọi phần tử */
+    overflow: hidden; /* Cắt các phần thừa nếu có */
+    border: 1px solid #e0e0e0; /* Đường viền tinh tế */
+}
+
+#dropdown-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#dropdown-menu ul li {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    color: #4e54c8;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none; /* Bỏ gạch dưới */
+}
+
+#dropdown-menu ul li a {
+    color: inherit; /* Kế thừa màu chữ từ li */
+    text-decoration: none; /* Bỏ gạch dưới */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#dropdown-menu ul li:hover {
+    background: linear-gradient(135deg, #8f94fb, #4e54c8);
+    color: #ffffff;
+    transform: translateX(5px);
+}
+
+#dropdown-menu ul li i {
+    font-size: 18px;
+    color: #8f94fb;
+    transition: color 0.3s;
+}
+
+#dropdown-menu ul li:hover i {
+    color: #ffffff;
+}
+
+
             /* Sidebar Navigation */
             nav {
                 background: linear-gradient(135deg, #4e54c8, #8f94fb);
@@ -29,7 +114,7 @@
                 height: 100vh;
                 box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
                 position: fixed;
-                top: 0;
+                top: 60px;
                 left: 0;
                 padding: 20px;
                 z-index: 10;
@@ -80,7 +165,7 @@
             .main-content {
                 margin-left: 240px;
                 /* Space for fixed sidebar */
-                padding: 20px;
+                padding-top: 60px;
                 overflow-y: auto;
                 height: 100vh;
                 background: linear-gradient(135deg, #ffffff, #f2f6fc);
@@ -187,19 +272,38 @@
     </head>
 
     <body>
+
+    
         <!-- Sidebar Navigation -->
+        <div>
         <nav>
+            
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="dashboard.blade.php" class="nav-link active">Dashboard</a></li>
                 <li class="nav-item"><a href="expense.blade.php" class="nav-link">Thu chi</a></li>
                 <li class="nav-item"><a href="transaction.blade.php" class="nav-link">Sổ giao dịch</a></li>
                 <li class="nav-item"><a href="remind.blade.php" class="nav-link">Nhắc nhở</a></li>
-                <li class="nav-item"><a href="bugdget.blade.php" class="nav-link">Ngân sácH</a></li>
+                <li class="nav-item"><a href="bugdget.blade.php" class="nav-link">Ngân sách</a></li>
                 <li class="nav-item"><a href="setting.blade.php" class="nav-link">Cài đặt</a></li>
             </ul>
         </nav>
+        <header>
+        <div class="user-menu" id="user-menu">
+            <i class="bi bi-person-circle"></i>
+            <span id="user-name"style="margin-left: 10px;"></span>
+            
+        </div>
+        <div id="dropdown-menu">
+            <ul>
+                <li><i class="bi bi-person-circle"></i> <a href="#">Thông tin tài khoản</a></li>
+                <li><i class="bi bi-lock"></i> <a href="#">Đổi mật khẩu</a></li>
+                <li onclick="logout()"><i class="bi bi-box-arrow-right"></i> Đăng xuất</li>
+            </ul>
+        </div>
+    </header>
         <div class="main-content">
             <div class="container">
+                
                 <!-- Month Navigation -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <span id="prev-month">&lt;</span>
@@ -254,7 +358,10 @@
                 </div>
             </div>
         </div>
-
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const months = [
@@ -474,6 +581,42 @@
                 renderMonthHeader();
                 updateDashboard(currentMonthIndex);
             });
+
+
+            document.addEventListener("DOMContentLoaded", () => {
+    // Hiển thị tên người dùng
+    const userNameElem = document.getElementById("user-name");
+    const currentUser = localStorage.getItem("currentUser");
+
+    if (currentUser) {
+        userNameElem.textContent = currentUser;
+    } else {
+        userNameElem.textContent = "Khách";
+    }
+
+    // Hiển thị và ẩn menu dropdown
+    const userMenu = document.getElementById("user-menu");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+
+    userMenu.addEventListener("click", () => {
+        const isVisible = dropdownMenu.style.display === "block";
+        dropdownMenu.style.display = isVisible ? "none" : "block";
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!userMenu.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            dropdownMenu.style.display = "none";
+        }
+    });
+});
+
+// Đăng xuất
+function logout() {
+    localStorage.removeItem("currentUser");
+    alert("Bạn đã đăng xuất!");
+    window.location.href = "login.blade.php";
+}
+
         </script>
 
     </body>

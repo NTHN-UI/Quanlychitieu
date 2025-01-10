@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-   
+
 
     <style>
         body {
@@ -19,6 +19,111 @@
             overflow-x: hidden;
         }
 
+        header {
+            position: fixed;
+            /* Giữ cố định */
+            top: 0;
+            /* Đặt ở trên cùng */
+            left: 0;
+            /* Căn bên trái */
+            width: 100%;
+            /* Phủ toàn bộ chiều ngang */
+            height: 60px;
+            /* Chiều cao của header */
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            color: white;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            /* Ưu tiên hiển thị trên các thành phần khác */
+        }
+
+        header .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        header .user-menu span {
+            font-weight: bold;
+        }
+
+        header .user-menu i {
+            font-size: 1.2rem;
+        }
+
+        #dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffffff, #f7f9fc);
+            /* Gradient nhẹ */
+            border-radius: 12px;
+            /* Góc bo tròn lớn hơn */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            /* Đổ bóng mềm mại */
+            display: none;
+            /* Ẩn dropdown mặc định */
+            z-index: 1001;
+            /* Đảm bảo hiển thị trên mọi phần tử */
+            overflow: hidden;
+            /* Cắt các phần thừa nếu có */
+            border: 1px solid #e0e0e0;
+            /* Đường viền tinh tế */
+        }
+
+        #dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #dropdown-menu ul li {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            color: #4e54c8;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            /* Bỏ gạch dưới */
+        }
+
+        #dropdown-menu ul li a {
+            color: inherit;
+            /* Kế thừa màu chữ từ li */
+            text-decoration: none;
+            /* Bỏ gạch dưới */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #dropdown-menu ul li:hover {
+            background: linear-gradient(135deg, #8f94fb, #4e54c8);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        #dropdown-menu ul li i {
+            font-size: 18px;
+            color: #8f94fb;
+            transition: color 0.3s;
+        }
+
+        #dropdown-menu ul li:hover i {
+            color: #ffffff;
+        }
+
+
+        /* Sidebar Navigation */
         nav {
             background: linear-gradient(135deg, #4e54c8, #8f94fb);
             /* Gradient tím xanh nhẹ */
@@ -27,7 +132,7 @@
             height: 100vh;
             box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
             position: fixed;
-            top: 0;
+            top: 60px;
             left: 0;
             padding: 20px;
             z-index: 10;
@@ -55,7 +160,7 @@
         .main-content {
             margin-left: 240px;
             /* Space for fixed sidebar */
-            padding: 20px;
+            padding-top: 60px;
             overflow-y: auto;
             height: 100vh;
             background: linear-gradient(135deg, #ffffff, #f2f6fc);
@@ -201,26 +306,28 @@
             margin-bottom: 15px;
             border-radius: 5px;
         }
+
         #floating-notifications .notification {
             background-color: #4e54c8;
-    color: white;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    animation: slideIn 0.5s ease;
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.5s ease;
 
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
     </style>
 </head>
 
@@ -237,7 +344,20 @@
                 <li class="nav-item"><a href="setting.blade.php" class="nav-link">Cài đặt</a></li>
             </ul>
         </nav>
+        <header>
+            <div class="user-menu" id="user-menu">
+                <i class="bi bi-person-circle"></i>
+                <span id="user-name" style="margin-left: 10px;"></span>
 
+            </div>
+            <div id="dropdown-menu">
+                <ul>
+                    <li><i class="bi bi-person-circle"></i> <a href="#">Thông tin tài khoản</a></li>
+                    <li><i class="bi bi-lock"></i> <a href="#">Đổi mật khẩu</a></li>
+                    <li onclick="logout()"><i class="bi bi-box-arrow-right"></i> Đăng xuất</li>
+                </ul>
+            </div>
+        </header>
         <div class="main-content">
             <div class="container">
                 <h2 class="text-center mb-4">Nhắc nhở</h2>
@@ -285,62 +405,62 @@
                 </div>
                 <!-- Modal Bootstrap -->
                 <!-- Modal Chi Tiết Nhắc Nhở -->
-<div class="modal fade" id="reminderDetailsModal" tabindex="-1" aria-labelledby="reminderDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reminderDetailsModalLabel">Chi Tiết Nhắc Nhở</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="reminder-details-form">
-                    <div class="mb-3">
-                        <label for="detail-title" class="form-label">Ghi chú</label>
-                        <input type="text" class="form-control" id="detail-title" placeholder="Nhập ghi chú">
+                <div class="modal fade" id="reminderDetailsModal" tabindex="-1" aria-labelledby="reminderDetailsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reminderDetailsModalLabel">Chi Tiết Nhắc Nhở</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="reminder-details-form">
+                                    <div class="mb-3">
+                                        <label for="detail-title" class="form-label">Ghi chú</label>
+                                        <input type="text" class="form-control" id="detail-title" placeholder="Nhập ghi chú">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="detail-date" class="form-label">Ngày</label>
+                                        <input type="date" class="form-control" id="detail-date">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="detail-repeat" class="form-label">Lặp lại</label>
+                                        <select class="form-select" id="detail-repeat">
+                                            <option value="khong">Không lặp lại</option>
+                                            <option value="hang-ngay">Hằng ngày</option>
+                                            <option value="hang-tuan">Hằng tuần</option>
+                                            <option value="hang-thang">Hằng tháng</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="detail-priority" class="form-label">Mức ưu tiên</label>
+                                        <select class="form-select" id="detail-priority">
+                                            <option value="khong-co">Không có</option>
+                                            <option value="thap">Thấp</option>
+                                            <option value="trung-binh">Trung bình</option>
+                                            <option value="cao">Cao</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="detail-list" class="form-label">Danh sách</label>
+                                        <select class="form-select" id="detail-list">
+                                            <option value="loi-nhac">Lời nhắc</option>
+                                            <option value="lich">Lịch</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="detail-active">
+                                        <label class="form-check-label" for="detail-active">Bật Nhắc Nhở</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Lưu Thay Đổi</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="detail-date" class="form-label">Ngày</label>
-                        <input type="date" class="form-control" id="detail-date">
-                    </div>
-                    <div class="mb-3">
-                        <label for="detail-repeat" class="form-label">Lặp lại</label>
-                        <select class="form-select" id="detail-repeat">
-                            <option value="khong">Không lặp lại</option>
-                            <option value="hang-ngay">Hằng ngày</option>
-                            <option value="hang-tuan">Hằng tuần</option>
-                            <option value="hang-thang">Hằng tháng</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="detail-priority" class="form-label">Mức ưu tiên</label>
-                        <select class="form-select" id="detail-priority">
-                            <option value="khong-co">Không có</option>
-                            <option value="thap">Thấp</option>
-                            <option value="trung-binh">Trung bình</option>
-                            <option value="cao">Cao</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="detail-list" class="form-label">Danh sách</label>
-                        <select class="form-select" id="detail-list">
-                            <option value="loi-nhac">Lời nhắc</option>
-                            <option value="lich">Lịch</option>
-                        </select>
-                    </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="detail-active">
-                        <label class="form-check-label" for="detail-active">Bật Nhắc Nhở</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Lưu Thay Đổi</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="floating-notifications" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 300px;"></div>
+                </div>
+                <div id="floating-notifications" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 300px;"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="script.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script src="script.js"></script>
 
 
                 <!-- Bootstrap JS -->
@@ -388,79 +508,81 @@
                     // Hiển thị nhắc nhở khi tải trang
                     document.addEventListener('DOMContentLoaded', renderReminders);
                     // Hiển thị thông tin chi tiết nhắc nhở
-const showReminderDetails = (index) => {
-    const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
-    const reminder = reminders[index];
+                    const showReminderDetails = (index) => {
+                        const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+                        const reminder = reminders[index];
 
-    // Điền thông tin vào modal
-    document.getElementById('detail-title').value = reminder.title || '';
-    document.getElementById('detail-date').value = reminder.date || '';
-    document.getElementById('detail-repeat').value = reminder.repeat || 'khong';
-    document.getElementById('detail-priority').value = reminder.priority || 'khong-co';
-    document.getElementById('detail-list').value = reminder.list || 'loi-nhac';
-    document.getElementById('detail-active').checked = reminder.active || false;
+                        // Điền thông tin vào modal
+                        document.getElementById('detail-title').value = reminder.title || '';
+                        document.getElementById('detail-date').value = reminder.date || '';
+                        document.getElementById('detail-repeat').value = reminder.repeat || 'khong';
+                        document.getElementById('detail-priority').value = reminder.priority || 'khong-co';
+                        document.getElementById('detail-list').value = reminder.list || 'loi-nhac';
+                        document.getElementById('detail-active').checked = reminder.active || false;
 
-    // Lưu chỉ số nhắc nhở để cập nhật sau
-    document.getElementById('reminder-details-form').setAttribute('data-index', index);
+                        // Lưu chỉ số nhắc nhở để cập nhật sau
+                        document.getElementById('reminder-details-form').setAttribute('data-index', index);
 
-    // Hiển thị modal
-    const modal = new bootstrap.Modal(document.getElementById('reminderDetailsModal'));
-    modal.show();
-};
+                        // Hiển thị modal
+                        const modal = new bootstrap.Modal(document.getElementById('reminderDetailsModal'));
+                        modal.show();
+                    };
 
-// Cập nhật thông tin nhắc nhở
-document.getElementById('reminder-details-form').addEventListener('submit', (e) => {
-    e.preventDefault();
+                    // Cập nhật thông tin nhắc nhở
+                    document.getElementById('reminder-details-form').addEventListener('submit', (e) => {
+                        e.preventDefault();
 
-    const index = e.target.getAttribute('data-index');
-    const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+                        const index = e.target.getAttribute('data-index');
+                        const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
 
-    // Cập nhật thông tin nhắc nhở
-    reminders[index].title = document.getElementById('detail-title').value;
-    reminders[index].date = document.getElementById('detail-date').value;
-    reminders[index].repeat = document.getElementById('detail-repeat').value;
-    reminders[index].priority = document.getElementById('detail-priority').value;
-    reminders[index].list = document.getElementById('detail-list').value;
-    reminders[index].active = document.getElementById('detail-active').checked;
+                        // Cập nhật thông tin nhắc nhở
+                        reminders[index].title = document.getElementById('detail-title').value;
+                        reminders[index].date = document.getElementById('detail-date').value;
+                        reminders[index].repeat = document.getElementById('detail-repeat').value;
+                        reminders[index].priority = document.getElementById('detail-priority').value;
+                        reminders[index].list = document.getElementById('detail-list').value;
+                        reminders[index].active = document.getElementById('detail-active').checked;
 
-    // Lưu lại vào localStorage
-    localStorage.setItem('reminders', JSON.stringify(reminders));
+                        // Lưu lại vào localStorage
+                        localStorage.setItem('reminders', JSON.stringify(reminders));
 
-    // Đóng modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('reminderDetailsModal'));
-    modal.hide();
+                        // Đóng modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('reminderDetailsModal'));
+                        modal.hide();
 
-    // Hiển thị lại danh sách nhắc nhở
-    renderReminders();
+                        // Hiển thị lại danh sách nhắc nhở
+                        renderReminders();
 
-    alert('Thông tin nhắc nhở đã được cập nhật!');
-});
+                        alert('Thông tin nhắc nhở đã được cập nhật!');
+                    });
 
-const updateReminder = async (index) => {
-    const reminder = {
-        title: document.getElementById('detail-title').value,
-        date: document.getElementById('detail-date').value,
-        repeat: document.getElementById('detail-repeat').value,
-        priority: document.getElementById('detail-priority').value,
-        list: document.getElementById('detail-list').value,
-        active: document.getElementById('detail-active').checked,
-    };
+                    const updateReminder = async (index) => {
+                        const reminder = {
+                            title: document.getElementById('detail-title').value,
+                            date: document.getElementById('detail-date').value,
+                            repeat: document.getElementById('detail-repeat').value,
+                            priority: document.getElementById('detail-priority').value,
+                            list: document.getElementById('detail-list').value,
+                            active: document.getElementById('detail-active').checked,
+                        };
 
-    try {
-        const response = await fetch(`/reminders/${index}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(reminder),
-        });
-        if (response.ok) {
-            alert('Nhắc nhở đã được cập nhật!');
-        } else {
-            alert('Lỗi cập nhật nhắc nhở!');
-        }
-    } catch (error) {
-        console.error('Error updating reminder:', error);
-    }
-};
+                        try {
+                            const response = await fetch(`/reminders/${index}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(reminder),
+                            });
+                            if (response.ok) {
+                                alert('Nhắc nhở đã được cập nhật!');
+                            } else {
+                                alert('Lỗi cập nhật nhắc nhở!');
+                            }
+                        } catch (error) {
+                            console.error('Error updating reminder:', error);
+                        }
+                    };
 
 
                     document.getElementById('add-reminder-form').addEventListener('submit', (e) => {
@@ -478,12 +600,12 @@ const updateReminder = async (index) => {
 
                         // Tạo nhắc nhở mới
                         const newReminder = {
-    title,
-    date,
-    category,
-    repeat: document.getElementById('detail-repeat').value || 'khong',
-    active: true, // Nhắc nhở mặc định được bật
-};
+                            title,
+                            date,
+                            category,
+                            repeat: document.getElementById('detail-repeat').value || 'khong',
+                            active: true, // Nhắc nhở mặc định được bật
+                        };
 
                         // Lưu nhắc nhở vào localStorage
                         const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
@@ -502,81 +624,113 @@ const updateReminder = async (index) => {
                         alert(`Nhắc nhở "${title}" đã được thêm thành công!`);
                     });
 
-const displayFloatingNotifications = (notifications) => {
-    const notificationContainer = document.getElementById('floating-notifications');
-    notifications.forEach((message, index) => {
-        // Tạo thông báo
-        const notificationElement = document.createElement('div');
-        notificationElement.className = 'notification';
-        notificationElement.innerHTML = `
+                    const displayFloatingNotifications = (notifications) => {
+                        const notificationContainer = document.getElementById('floating-notifications');
+                        notifications.forEach((message, index) => {
+                            // Tạo thông báo
+                            const notificationElement = document.createElement('div');
+                            notificationElement.className = 'notification';
+                            notificationElement.innerHTML = `
             <span>${message}</span>
             
         `;
-        notificationContainer.appendChild(notificationElement);
+                            notificationContainer.appendChild(notificationElement);
 
-        // Tự động xóa thông báo sau 5 giây
-        setTimeout(() => {
-            notificationElement.remove();
-        }, 5000 + index * 500); // Hiển thị cách nhau 0.5 giây
-    });
-};
+                            // Tự động xóa thông báo sau 5 giây
+                            setTimeout(() => {
+                                notificationElement.remove();
+                            }, 5000 + index * 500); // Hiển thị cách nhau 0.5 giây
+                        });
+                    };
 
-// Hàm kiểm tra nhắc nhở và lưu vào localStorage
-const checkReminders = () => {
-    const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0]; // YYYY-MM-DD
-    const notifications = []; // Danh sách thông báo
+                    // Hàm kiểm tra nhắc nhở và lưu vào localStorage
+                    const checkReminders = () => {
+                        const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+                        const today = new Date();
+                        const todayString = today.toISOString().split('T')[0]; // YYYY-MM-DD
+                        const notifications = []; // Danh sách thông báo
 
-    reminders.forEach((reminder) => {
-        if (!reminder.active) return;
+                        reminders.forEach((reminder) => {
+                            if (!reminder.active) return;
 
-        const reminderDate = new Date(reminder.date);
-        const repeat = reminder.repeat;
-        const reminderDay = reminderDate.getDate();
-        const reminderWeekday = reminderDate.getDay();
+                            const reminderDate = new Date(reminder.date);
+                            const repeat = reminder.repeat;
+                            const reminderDay = reminderDate.getDate();
+                            const reminderWeekday = reminderDate.getDay();
 
-        let showReminder = false;
+                            let showReminder = false;
 
-        // Kiểm tra điều kiện lặp lại
-        if (repeat === 'khong' && reminder.date === todayString) {
-            showReminder = true;
-        } else if (repeat === 'hang-ngay') {
-            showReminder = true;
-        } else if (repeat === 'hang-tuan' && today.getDay() === 1) {
-            showReminder = true;
-        } else if (repeat === 'hang-thang' && today.getDate() === reminderDay) {
-            showReminder = true;
-        }
+                            // Kiểm tra điều kiện lặp lại
+                            if (repeat === 'khong' && reminder.date === todayString) {
+                                showReminder = true;
+                            } else if (repeat === 'hang-ngay') {
+                                showReminder = true;
+                            } else if (repeat === 'hang-tuan' && today.getDay() === 1) {
+                                showReminder = true;
+                            } else if (repeat === 'hang-thang' && today.getDate() === reminderDay) {
+                                showReminder = true;
+                            }
 
-        if (showReminder) {
-            notifications.push(`Nhắc nhở: ${reminder.title} vào hôm nay.`);
-        }
-    });
+                            if (showReminder) {
+                                notifications.push(`Nhắc nhở: ${reminder.title} vào hôm nay.`);
+                            }
+                        });
 
-    // Lưu thông báo vào localStorage
-    if (notifications.length > 0) {
-        localStorage.setItem('todayNotifications', JSON.stringify(notifications));
-    }
-};
+                        // Lưu thông báo vào localStorage
+                        if (notifications.length > 0) {
+                            localStorage.setItem('todayNotifications', JSON.stringify(notifications));
+                        }
+                    };
 
-// Hiển thị thông báo khi tải trang
-document.addEventListener('DOMContentLoaded', () => {
-    const todayNotifications = JSON.parse(localStorage.getItem('todayNotifications')) || [];
-    if (todayNotifications.length > 0) {
-        displayFloatingNotifications(todayNotifications);
-        localStorage.removeItem('todayNotifications'); // Xóa thông báo sau khi hiển thị
-    }
-});
+                    // Hiển thị thông báo khi tải trang
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const todayNotifications = JSON.parse(localStorage.getItem('todayNotifications')) || [];
+                        if (todayNotifications.length > 0) {
+                            displayFloatingNotifications(todayNotifications);
+                            localStorage.removeItem('todayNotifications'); // Xóa thông báo sau khi hiển thị
+                        }
+                    });
 
-// Tự động kiểm tra nhắc nhở mỗi phút
-setInterval(checkReminders, 60 * 1000);
+                    // Tự động kiểm tra nhắc nhở mỗi phút
+                    setInterval(checkReminders, 60 * 1000);
 
-// Kiểm tra nhắc nhở khi tải trang
-document.addEventListener('DOMContentLoaded', checkReminders);
+                    // Kiểm tra nhắc nhở khi tải trang
+                    document.addEventListener('DOMContentLoaded', checkReminders);
 
 
-                    
+                    document.addEventListener("DOMContentLoaded", () => {
+                        // Hiển thị tên người dùng
+                        const userNameElem = document.getElementById("user-name");
+                        const currentUser = localStorage.getItem("currentUser");
+
+                        if (currentUser) {
+                            userNameElem.textContent = currentUser;
+                        } else {
+                            userNameElem.textContent = "Khách";
+                        }
+
+                        // Hiển thị và ẩn menu dropdown
+                        const userMenu = document.getElementById("user-menu");
+                        const dropdownMenu = document.getElementById("dropdown-menu");
+
+                        userMenu.addEventListener("click", () => {
+                            const isVisible = dropdownMenu.style.display === "block";
+                            dropdownMenu.style.display = isVisible ? "none" : "block";
+                        });
+
+                        document.addEventListener("click", (event) => {
+                            if (!userMenu.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                                dropdownMenu.style.display = "none";
+                            }
+                        });
+                    });
+
+                    // Đăng xuất
+                    function logout() {
+                        localStorage.removeItem("currentUser");
+                        alert("Bạn đã đăng xuất!");
+                        window.location.href = "login.blade.php";
+                    }
                 </script>
 </body>
 
