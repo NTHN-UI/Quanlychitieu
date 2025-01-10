@@ -12,6 +12,21 @@
             font-family: Arial, sans-serif;
             background-color: #f4f7fa;
         }
+        header {
+                position: fixed; /* Giữ cố định */
+    top: 0; /* Đặt ở trên cùng */
+    left: 0; /* Căn bên trái */
+    width: 100%; /* Phủ toàn bộ chiều ngang */
+    height: 60px; /* Chiều cao của header */
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Ưu tiên hiển thị trên các thành phần khác */
+    }
 
         nav {
             background: linear-gradient(135deg, #4e54c8, #8f94fb);
@@ -20,7 +35,7 @@
             height: 100vh;
             box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
             position: fixed;
-            top: 0;
+            top: 60px;
             left: 0;
             padding: 20px;
             z-index: 10;
@@ -47,7 +62,7 @@
 
         .main-content {
             margin-left: 240px;
-            padding: 20px;
+            padding-top: 60px;
             overflow-y: auto;
             height: 100vh;
             background: linear-gradient(135deg, #ffffff, #f2f6fc);
@@ -128,9 +143,13 @@
             <li class="nav-item"><a href="transaction.blade.php" class="nav-link" id="nav-transaction">Sổ giao dịch</a></li>
             <li class="nav-item"><a href="remind.blade.php" class="nav-link" id="nav-remind">Nhắc nhở</a></li>
             <li class="nav-item"><a href="bugdget.blade.php" class="nav-link ">Ngân sách</a></li>
+            <li class="nav-item"><a href="courses.blade.php" class="nav-link ">Khoá học</a></li>
             <li class="nav-item"><a href="setting.blade.php" class="nav-link active" id="nav-settings">Cài đặt</a></li>
         </ul>
     </nav>
+    <header>
+        
+    </header>
     <div class="main-content">
     <div class="container">
         <div class="header" id="header-settings">Cài đặt</div>
