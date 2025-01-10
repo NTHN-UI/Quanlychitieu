@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Chi Tiêu - Đăng Nhập</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -14,6 +13,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
 
         .card {
@@ -23,10 +23,6 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
         }
-        h4.card-title {
-    font-weight: bold;
-    color: #4e54c8;
-}
 
         .card-body {
             padding: 25px;
@@ -47,33 +43,23 @@
         }
 
         .btn-social {
+            width: 100%;
+            margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 10px;
-            width: 100%;
             border-radius: 15px;
             font-weight: bold;
         }
 
         .btn-google {
-            background-color: #4285F4;
+            background-color:#757575;
             color: white;
-            border: none;
         }
 
         .btn-facebook {
             background-color: #1877F2;
             color: white;
-            border: none;
-        }
-
-        .btn-google:hover {
-            background-color:white;
-        }
-
-        .btn-facebook:hover {
-            background-color:white;
         }
 
         .form-switch {
@@ -88,13 +74,18 @@
         .form-switch a:hover {
             text-decoration: underline;
         }
+
+        h4.card-title {
+            font-weight: bold;
+            color: #4e54c8;
+        }
     </style>
 </head>
 <body>
 
     <div class="card shadow-lg">
         <div class="card-body">
-            <h4 class="card-title text-center fw-bold">Quản Lý Chi Tiêu</h4>
+            <h4 class="card-title text-center">Đăng Nhập</h4>
             <form id="login-form">
                 <div class="mb-3">
                     <label for="login-email" class="form-label">Email</label>
@@ -106,7 +97,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Đăng Nhập</button>
             </form>
-            <div class="text-center mt-3">
+            <div class="mt-3">
                 <button class="btn btn-google btn-social">
                     <i class="bi bi-google me-2"></i> Đăng nhập bằng Google
                 </button>
@@ -124,7 +115,6 @@
     <script>
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value.trim();
 
@@ -142,20 +132,21 @@
                 return;
             }
 
-            // Lưu thông tin người dùng đang đăng nhập
-            localStorage.setItem('currentUser', JSON.stringify(users[email]));
-
             alert('Đăng nhập thành công!');
+            // Lưu thông tin người dùng đang đăng nhập
+            localStorage.setItem('currentUser', users[email].name);
+
+            // Chuyển sang giao diện quản lý chi tiêu
             window.location.href = 'dashboard.blade.php';
         });
 
-        // Thêm sự kiện cho nút Google và Facebook
+        // Xử lý nút Google và Facebook (chỉ hiển thị cảnh báo vì chưa tích hợp)
         document.querySelector('.btn-google').addEventListener('click', () => {
-            alert('Tính năng đăng nhập Google chưa được tích hợp.');
+            alert('Tính năng đăng nhập bằng Google chưa được tích hợp.');
         });
 
         document.querySelector('.btn-facebook').addEventListener('click', () => {
-            alert('Tính năng đăng nhập Facebook chưa được tích hợp.');
+            alert('Tính năng đăng nhập bằng Facebook chưa được tích hợp.');
         });
     </script>
 </body>

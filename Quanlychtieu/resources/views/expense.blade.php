@@ -22,106 +22,124 @@
         }
 
         header {
-                position: fixed; /* Giữ cố định */
-    top: 0; /* Đặt ở trên cùng */
-    left: 0; /* Căn bên trái */
-    width: 100%; /* Phủ toàn bộ chiều ngang */
-    height: 60px; /* Chiều cao của header */
-    background: linear-gradient(135deg, #4e54c8, #8f94fb);
-    color: white;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Ưu tiên hiển thị trên các thành phần khác */
-    }
+            position: fixed;
+            /* Giữ cố định */
+            top: 0;
+            /* Đặt ở trên cùng */
+            left: 0;
+            /* Căn bên trái */
+            width: 100%;
+            /* Phủ toàn bộ chiều ngang */
+            height: 60px;
+            /* Chiều cao của header */
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            color: white;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            /* Ưu tiên hiển thị trên các thành phần khác */
+        }
 
-    header .user-menu {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-    }
+        header .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
 
-    header .user-menu span {
-        font-weight: bold;
-    }
+        header .user-menu span {
+            font-weight: bold;
+        }
 
-    header .user-menu i {
-        font-size: 1.2rem;
-    }
-    #dropdown-menu {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    background: linear-gradient(135deg, #ffffff, #f7f9fc); /* Gradient nhẹ */
-    border-radius: 12px; /* Góc bo tròn lớn hơn */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Đổ bóng mềm mại */
-    display: none; /* Ẩn dropdown mặc định */
-    z-index: 1001; /* Đảm bảo hiển thị trên mọi phần tử */
-    overflow: hidden; /* Cắt các phần thừa nếu có */
-    border: 1px solid #e0e0e0; /* Đường viền tinh tế */
-}
+        header .user-menu i {
+            font-size: 1.2rem;
+        }
 
-#dropdown-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
+        #dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffffff, #f7f9fc);
+            /* Gradient nhẹ */
+            border-radius: 12px;
+            /* Góc bo tròn lớn hơn */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            /* Đổ bóng mềm mại */
+            display: none;
+            /* Ẩn dropdown mặc định */
+            z-index: 1001;
+            /* Đảm bảo hiển thị trên mọi phần tử */
+            overflow: hidden;
+            /* Cắt các phần thừa nếu có */
+            border: 1px solid #e0e0e0;
+            /* Đường viền tinh tế */
+        }
 
-#dropdown-menu ul li {
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-    color: #4e54c8;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none; /* Bỏ gạch dưới */
-}
+        #dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
 
-#dropdown-menu ul li a {
-    color: inherit; /* Kế thừa màu chữ từ li */
-    text-decoration: none; /* Bỏ gạch dưới */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        #dropdown-menu ul li {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            color: #4e54c8;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            /* Bỏ gạch dưới */
+        }
 
-#dropdown-menu ul li:hover {
-    background: linear-gradient(135deg, #8f94fb, #4e54c8);
-    color: #ffffff;
-    transform: translateX(5px);
-}
+        #dropdown-menu ul li a {
+            color: inherit;
+            /* Kế thừa màu chữ từ li */
+            text-decoration: none;
+            /* Bỏ gạch dưới */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-#dropdown-menu ul li i {
-    font-size: 18px;
-    color: #8f94fb;
-    transition: color 0.3s;
-}
+        #dropdown-menu ul li:hover {
+            background: linear-gradient(135deg, #8f94fb, #4e54c8);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
 
-#dropdown-menu ul li:hover i {
-    color: #ffffff;
-}
+        #dropdown-menu ul li i {
+            font-size: 18px;
+            color: #8f94fb;
+            transition: color 0.3s;
+        }
+
+        #dropdown-menu ul li:hover i {
+            color: #ffffff;
+        }
 
 
-            /* Sidebar Navigation */
-            nav {
-                background: linear-gradient(135deg, #4e54c8, #8f94fb);
-                /* Gradient tím xanh nhẹ */
-                color: white;
-                width: 220px;
-                height: 100vh;
-                box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
-                position: fixed;
-                top: 60px;
-                left: 0;
-                padding: 20px;
-                z-index: 10;
-            }
+        /* Sidebar Navigation */
+        nav {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            /* Gradient tím xanh nhẹ */
+            color: white;
+            width: 220px;
+            height: 100vh;
+            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 60px;
+            left: 0;
+            padding: 20px;
+            z-index: 10;
+        }
+
         nav .nav-link {
             color: white;
             margin-bottom: 15px;
@@ -299,8 +317,8 @@
     <header>
         <div class="user-menu" id="user-menu">
             <i class="bi bi-person-circle"></i>
-            <span id="user-name"style="margin-left: 10px;"></span>
-            
+            <span id="user-name" style="margin-left: 10px;"></span>
+
         </div>
         <div id="dropdown-menu">
             <ul>
@@ -337,6 +355,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="expense-category" class="form-label">Danh mục</label>
+
                                     <select class="form-select" id="expense-category" required>
                                         <option value="" selected disabled>Chọn danh mục</option>
                                         <option value="🍔|Ăn uống">🍔 Ăn uống</option>
@@ -354,6 +373,10 @@
                                         <option value="👨‍👩‍👧‍👦|Người thân">👨‍👩‍👧‍👦 Người thân</option>
 
                                     </select>
+
+                                    <span id="add-category-btn" class="text-dark ms-2" style="cursor: pointer; font-size: 14px; font-weight: normal; display: inline-flex; align-items: center;">
+                                        <i class="bi bi-plus-circle me-1" style="font-size: 16px; color: #000;"></i>Thêm danh mục mới
+                                    </span>
 
                                     <!-- Recent categories -->
                                     <div class="recent-categories" id="recent-expense-categories">
@@ -395,6 +418,9 @@
                                         <option value="🤝|Trợ cấp">🤝 Trợ cấp</option>
                                         <option value="🔧|Khác">🔧 Khác</option>
                                     </select>
+                                    <span id="add-category-btn-income" class="text-dark ms-2" style="cursor: pointer; font-size: 14px; font-weight: normal; display: inline-flex; align-items: center;">
+                                        <i class="bi bi-plus-circle me-1" style="font-size: 16px; color: #000;"></i>Thêm danh mục mới
+                                    </span>
                                     <div class="recent-categories" id="recent-income-categories">
                                         <strong>Danh mục gần đây: </strong>
 
@@ -586,7 +612,7 @@
                                     <div id="open-icon-picker-income" style="color: #f76c6c; cursor: pointer;">Chọn biểu tượng</div>
                                 </div>
                                 <div id="icon-picker-modal-income" style="position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 300px; background: white; border: 1px solid rgb(204, 204, 204); border-radius: 12px; box-shadow: rgba(0, 0, 0, 0.3) 0px 5px 15px; z-index: 9999;">
-                                    <div id="icon-picker-income" class="icon-picker">                                    </div>
+                                    <div id="icon-picker-income" class="icon-picker"> </div>
                                 </div>
                                 <div style="margin-bottom: 20px;text-align: left;">
                                     <label for="category-name-income" style="display: inline-block; margin-bottom: 5px; font-weight: bold;">Tên danh mục <span style="color: red;">*</span></label>
@@ -610,7 +636,7 @@
                 document.addEventListener('DOMContentLoaded', () => {
                     const recentExpenseCategoriesElem = document.getElementById('recent-expense-categories');
                     const recentIncomeCategoriesElem = document.getElementById('recent-income-categories');
-                    const MAX_RECENT_CATEGORIES = 5; 
+                    const MAX_RECENT_CATEGORIES = 5;
                     const loadRecentCategories = (key) => {
                         return JSON.parse(localStorage.getItem(key)) || [];
                     };
@@ -645,7 +671,7 @@
                     };
                     const formatCurrency = (input) => {
                         input.addEventListener('input', (e) => {
-                            let value = e.target.value.replace(/[^\d]/g, ''); 
+                            let value = e.target.value.replace(/[^\d]/g, '');
                             value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                             e.target.value = value;
                         });
@@ -659,13 +685,13 @@
                             const date = document.getElementById(`${type}-date`).value.trim();
                             const categoryField = document.getElementById(categoryFieldId);
                             const categoryValue = categoryField.value; // Lấy giá trị danh mục
-        const description = document.getElementById(`${type}-description`).value.trim();
+                            const description = document.getElementById(`${type}-description`).value.trim();
 
-        if (!categoryField) {
-            alert('Danh mục không tồn tại. Vui lòng kiểm tra lại.');
-            return;
-        }
-        
+                            if (!categoryField) {
+                                alert('Danh mục không tồn tại. Vui lòng kiểm tra lại.');
+                                return;
+                            }
+
                             if (!amount || !categoryValue || !date || !description) {
                                 alert('Vui lòng điền đầy đủ thông tin.');
                                 return;
@@ -688,15 +714,15 @@
 
                             alert(`Giao dịch ${type === 'expense' ? 'chi tiêu' : 'thu nhập'} đã được thêm thành công!`);
 
-                            e.target.reset(); 
+                            e.target.reset();
                             renderRecentCategories(recentCategoriesKey, recentCategoriesElem, (selectedCategory) => {
                                 document.getElementById(categoryFieldId).value = `${icon}|${category}`; // Set value in select
                             });
                             setTimeout(() => {
-            window.location.href = 'dashboard.blade.php'; // Chuyển hướng về trang Dashboard
-        }, 500); // Đợi 500ms trước khi chuyển hướng để hiển thị thông báo
-    });
-                    
+                                window.location.href = 'dashboard.blade.php'; // Chuyển hướng về trang Dashboard
+                            }, 500); // Đợi 500ms trước khi chuyển hướng để hiển thị thông báo
+                        });
+
                     };
 
                     // Khi thêm chi tiêu
@@ -727,50 +753,38 @@
                     formatCurrency(document.getElementById('income-amount'));
                 });
                 document.addEventListener('DOMContentLoaded', () => {
-                    const modal = document.getElementById('category-modal'); // Modal
-                    const closeModal = document.getElementById('close-modal'); // Nút đóng modal
-                    const triggerElement = document.getElementById('expense-category'); // Phần tử kích hoạt modal
-                    const createNewButton = document.getElementById('create-new'); // Nút Tạo mới
-                    let clickTimer = null; // Timer để phân biệt giữa click và double-click
+    const categoryModal = document.getElementById('category-modal'); // Modal
+    const closeModal = document.getElementById('close-modal'); // Nút đóng modal
+    const addCategoryBtn = document.getElementById('add-category-btn'); // Nút Tạo mới
+    const createNewButton = document.getElementById('create-new'); // Nút Tạo mới trong modal
 
-                    // Đảm bảo modal luôn bị ẩn khi tải trang
-                    modal.style.display = 'none';
+    // Đảm bảo modal luôn bị ẩn khi tải trang
+    categoryModal.style.display = 'none';
 
-                    // Lắng nghe sự kiện click 1 lần và double-click
-                    triggerElement.addEventListener('click', () => {
-                        if (clickTimer !== null) {
-                            // Nếu click thứ hai xảy ra trong thời gian ngắn => double-click
-                            clearTimeout(clickTimer); // Xóa timer
-                            clickTimer = null;
+    // Hiển thị modal khi nhấn dấu cộng
+    addCategoryBtn.addEventListener('click', () => {
+        categoryModal.style.display = 'flex'; // Hiển thị modal
+    });
 
-                            // Hiển thị modal khi double-click
-                            modal.style.display = 'flex';
-                        } else {
-                            // Nếu chỉ click 1 lần
-                            clickTimer = setTimeout(() => {
-                                clickTimer = null; // Reset timer
-                                console.log('Chọn danh mục bình thường'); // Hoạt động chọn bình thường
-                            }, 300); // Thời gian chờ để xác định double-click (300ms)
-                        }
-                    });
+    // Đóng modal khi nhấn nút "×"
+    closeModal.addEventListener('click', () => {
+        categoryModal.style.display = 'none'; // Ẩn modal
+    });
 
-                    // Hiển thị modal khi nhấn nút "Tạo mới"
-                    createNewButton.addEventListener('click', () => {
-                        modal.style.display = 'flex';
-                    });
+    // Đóng modal khi nhấn ra ngoài modal
+    categoryModal.addEventListener('click', (event) => {
+        if (event.target === categoryModal) {
+            categoryModal.style.display = 'none'; // Ẩn modal
+        }
+    });
 
-                    // Đóng modal khi nhấn nút "×"
-                    closeModal.addEventListener('click', () => {
-                        modal.style.display = 'none';
-                    });
+    // Hiển thị modal khi nhấn nút "Tạo mới"
+    createNewButton.addEventListener('click', () => {
+        
+        categoryModal.style.display = 'flex'; // Hiển thị modal
+    });
+});
 
-                    // Đóng modal khi nhấn ra ngoài modal
-                    modal.addEventListener('click', (event) => {
-                        if (event.target === modal) {
-                            modal.style.display = 'none';
-                        }
-                    });
-                });
                 document.addEventListener('DOMContentLoaded', () => {
                     const createNewButton = document.getElementById('create-new'); // Nút Tạo mới
                     const createCategoryModal = document.getElementById('create-category-modal'); // Modal Tạo danh mục
@@ -951,7 +965,7 @@
                     const incomeCategoryModal = document.getElementById('income-category-modal'); // Modal danh mục thu nhập
                     const closeModalButton = document.getElementById('close-income-modal'); // Nút đóng modal
                     const createNewButton = document.getElementById('create-new-income'); // Nút tạo mới danh mục thu nhập
-                    let clickTimer = null;
+                    const addCategoryBtnIncome = document.getElementById('add-category-btn-income'); // Nút Tạo mới
 
                     // Kiểm tra trạng thái modal từ localStorage khi tải lại trang
                     const modalState = localStorage.getItem('incomeCategoryModalState');
@@ -961,26 +975,10 @@
                         incomeCategoryModal.style.display = 'none';
                     }
 
-                    // Lắng nghe sự kiện click để hiển thị modal danh mục thu nhập (double-click)
-                    incomeCategoryDropdown.addEventListener('click', () => {
-                        if (clickTimer !== null) {
-                            // Nếu click thứ hai trong thời gian ngắn => double-click
-                            clearTimeout(clickTimer); // Hủy bỏ timer
-                            clickTimer = null;
-
-                            // Hiển thị modal khi double-click
-                            incomeCategoryModal.style.display = 'flex';
-
-                            // Lưu trạng thái modal vào localStorage
-                            localStorage.setItem('incomeCategoryModalState', 'open');
-                        } else {
-                            // Nếu chỉ click 1 lần
-                            clickTimer = setTimeout(() => {
-                                clickTimer = null; // Reset timer
-                                console.log('Chọn danh mục thu nhập bình thường');
-                            }, 300); // Chờ 300ms để phân biệt click đơn và double-click
-                        }
-                    });
+// Hiển thị modal khi nhấn dấu cộng
+addCategoryBtnIncome.addEventListener('click', () => {
+    incomeCategoryModal.style.display = 'flex'; 
+});
 
                     // Đóng modal khi nhấn nút "×"
                     closeModalButton.addEventListener('click', () => {
@@ -1010,27 +1008,27 @@
                 });
 
                 document.addEventListener('DOMContentLoaded', () => {
-    const createNewButtonIncome = document.getElementById('create-new-income'); // Nút tạo mới thu nhập
-    const createCategoryModalIncome = document.getElementById('create-category-modal-income'); // Modal tạo danh mục thu nhập
-    const closeCreateModalIncome = document.getElementById('close-create-modal-income'); // Nút đóng modal thu nhập
+                    const createNewButtonIncome = document.getElementById('create-new-income'); // Nút tạo mới thu nhập
+                    const createCategoryModalIncome = document.getElementById('create-category-modal-income'); // Modal tạo danh mục thu nhập
+                    const closeCreateModalIncome = document.getElementById('close-create-modal-income'); // Nút đóng modal thu nhập
 
-    // Hiển thị modal khi nhấn nút "Tạo mới"
-    createNewButtonIncome.addEventListener('click', () => {
-        createCategoryModalIncome.style.display = 'flex'; // Hiển thị modal
-    });
+                    // Hiển thị modal khi nhấn nút "Tạo mới"
+                    createNewButtonIncome.addEventListener('click', () => {
+                        createCategoryModalIncome.style.display = 'flex'; // Hiển thị modal
+                    });
 
-    // Đóng modal khi nhấn nút "×"
-    closeCreateModalIncome.addEventListener('click', () => {
-        createCategoryModalIncome.style.display = 'none'; // Ẩn modal
-    });
+                    // Đóng modal khi nhấn nút "×"
+                    closeCreateModalIncome.addEventListener('click', () => {
+                        createCategoryModalIncome.style.display = 'none'; // Ẩn modal
+                    });
 
-    // Đóng modal khi nhấn ra ngoài modal
-    createCategoryModalIncome.addEventListener('click', (event) => {
-        if (event.target === createCategoryModalIncome) {
-            createCategoryModalIncome.style.display = 'none'; // Ẩn modal nếu click bên ngoài modal
-        }
-    });
-});
+                    // Đóng modal khi nhấn ra ngoài modal
+                    createCategoryModalIncome.addEventListener('click', (event) => {
+                        if (event.target === createCategoryModalIncome) {
+                            createCategoryModalIncome.style.display = 'none'; // Ẩn modal nếu click bên ngoài modal
+                        }
+                    });
+                });
 
 
                 document.addEventListener('DOMContentLoaded', () => {
@@ -1136,40 +1134,40 @@
                     loadCategoriesFromLocalStorageIncome();
                 });
 
-             
-            document.addEventListener("DOMContentLoaded", () => {
-    // Hiển thị tên người dùng
-    const userNameElem = document.getElementById("user-name");
-    const currentUser = localStorage.getItem("currentUser");
 
-    if (currentUser) {
-        userNameElem.textContent = currentUser;
-    } else {
-        userNameElem.textContent = "Khách";
-    }
+                document.addEventListener("DOMContentLoaded", () => {
+                    // Hiển thị tên người dùng
+                    const userNameElem = document.getElementById("user-name");
+                    const currentUser = localStorage.getItem("currentUser");
 
-    // Hiển thị và ẩn menu dropdown
-    const userMenu = document.getElementById("user-menu");
-    const dropdownMenu = document.getElementById("dropdown-menu");
+                    if (currentUser) {
+                        userNameElem.textContent = currentUser;
+                    } else {
+                        userNameElem.textContent = "Khách";
+                    }
 
-    userMenu.addEventListener("click", () => {
-        const isVisible = dropdownMenu.style.display === "block";
-        dropdownMenu.style.display = isVisible ? "none" : "block";
-    });
+                    // Hiển thị và ẩn menu dropdown
+                    const userMenu = document.getElementById("user-menu");
+                    const dropdownMenu = document.getElementById("dropdown-menu");
 
-    document.addEventListener("click", (event) => {
-        if (!userMenu.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.style.display = "none";
-        }
-    });
-});
+                    userMenu.addEventListener("click", () => {
+                        const isVisible = dropdownMenu.style.display === "block";
+                        dropdownMenu.style.display = isVisible ? "none" : "block";
+                    });
 
-// Đăng xuất
-function logout() {
-    localStorage.removeItem("currentUser");
-    alert("Bạn đã đăng xuất!");
-    window.location.href = "login.blade.php";
-}   
+                    document.addEventListener("click", (event) => {
+                        if (!userMenu.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                            dropdownMenu.style.display = "none";
+                        }
+                    });
+                });
+
+                // Đăng xuất
+                function logout() {
+                    localStorage.removeItem("currentUser");
+                    alert("Bạn đã đăng xuất!");
+                    window.location.href = "login.blade.php";
+                }
             </script>
 </body>
 

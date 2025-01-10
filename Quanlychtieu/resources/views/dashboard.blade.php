@@ -339,7 +339,16 @@
                         </ul>
                     </div>
                 </div>
+
+
+                
             </div>
+            <!-- Floating Reminders -->
+<div id="floating-reminders" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 300px;"></div>
+
+            
+
+            
 
 
 
@@ -581,6 +590,70 @@
                 renderMonthHeader();
                 updateDashboard(currentMonthIndex);
             });
+            document.addEventListener("DOMContentLoaded", () => {
+    const renderFloatingReminders = () => {
+        const reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+        const reminderContainer = document.getElementById("floating-reminders");
+        const today = new Date();
+        const todayString = today.toISOString().split("T")[0]; // YYYY-MM-DD
+
+        // Làm sạch danh sách trước khi thêm mới
+        reminderContainer.innerHTML = "";
+
+        if (reminders.length === 0) {
+            return; // Không có nhắc nhở
+        }
+
+        // Lọc nhắc nhở hợp lệ cho hôm nay
+        const todayReminders = reminders.filter((reminder) => {
+            const reminderDate = new Date(reminder.date);
+            const repeat = reminder.repeat;
+
+            if (reminder.date === todayString) {
+                return true;
+            } else if (repeat === "hang-ngay") {
+                return true;
+            } else if (repeat === "hang-tuan" && today.getDay() === reminderDate.getDay()) {
+                return true;
+            } else if (repeat === "hang-thang" && today.getDate() === reminderDate.getDate()) {
+                return true;
+            }
+            return false;
+        });
+
+        if (todayReminders.length === 0) {
+            return; // Không có nhắc nhở hôm nay
+        }
+
+        // Hiển thị tất cả nhắc nhở
+        todayReminders.forEach((reminder, index) => {
+            const reminderCard = document.createElement("div");
+            reminderCard.className = "notification p-3 mb-2";
+            reminderCard.style.backgroundColor = "#4e54c8";
+            reminderCard.style.color = "white";
+            reminderCard.style.borderRadius = "8px";
+            reminderCard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+            reminderCard.style.transition = "opacity 0.3s";
+
+            reminderCard.innerHTML = `
+                <span>Nhắc nhở: ${reminder.title} vào hôm nay.</span>
+            `;
+
+            reminderContainer.appendChild(reminderCard);
+
+            // Ẩn nhắc nhở lần lượt sau khoảng thời gian
+            setTimeout(() => {
+                reminderCard.style.opacity = "0"; // Hiệu ứng mờ dần
+                setTimeout(() => {
+                    reminderCard.remove(); // Xóa khỏi DOM sau khi ẩn
+                }, 300); // Đợi hiệu ứng hoàn tất
+            }, 5000 * (index + 1)); // Tăng dần thời gian ẩn (5 giây cho mỗi nhắc nhở)
+        });
+    };
+
+    // Hiển thị nhắc nhở nổi khi tải trang
+    renderFloatingReminders();
+});
 
 
             document.addEventListener("DOMContentLoaded", () => {

@@ -389,34 +389,26 @@ const calculateTotalExpenses = () => {
     }
 };
 
-const handleDeleteTransaction = (filteredIndex) => {
+const handleDeleteTransaction = (date, category, amount) => {
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     const categoryExpenses = JSON.parse(localStorage.getItem("categoryExpenses")) || {};
-    const filteredTransactions = transactions.filter(tx => {
-        const txDate = new Date(tx.date);
-        return (
-            txDate.getMonth() + 1 === currentMonthIndex &&
-            txDate.getFullYear() === currentYear
-        );
-    });
 
-    const transaction = filteredTransactions[filteredIndex]; // Giao dịch hiển thị trên giao diện
+    // Tìm giao dịch cần xóa trong danh sách gốc
+    const transactionIndex = transactions.findIndex(tx =>
+        tx.date === date &&
+        tx.category === category &&
+        tx.amount === amount
+    );
 
-    if (confirm(`Bạn có chắc chắn muốn xóa giao dịch: "${transaction.description}"?`)) {
-        // Xác định vị trí chính xác của giao dịch trong danh sách gốc
-        const transactionIndex = transactions.findIndex(tx =>
-            tx.date === transaction.date &&
-            tx.type === transaction.type &&
-            tx.category === transaction.category &&
-            tx.amount === transaction.amount
-        );
+    if (transactionIndex !== -1) {
+        const transaction = transactions[transactionIndex]; // Lấy giao dịch để xóa
 
-        if (transactionIndex !== -1) {
+        if (confirm(`Bạn có chắc chắn muốn xóa giao dịch: "${transaction.description}"?`)) {
             // Xóa giao dịch khỏi danh sách gốc
             transactions.splice(transactionIndex, 1);
             localStorage.setItem("transactions", JSON.stringify(transactions));
 
-            // Xóa tổng chi tiêu khỏi categoryExpenses
+            // Cập nhật tổng chi tiêu
             const transactionDate = new Date(transaction.date);
             const transactionMonth = transactionDate.getMonth() + 1; // Tháng từ 1-12
             const transactionYear = transactionDate.getFullYear();
@@ -444,19 +436,20 @@ const handleDeleteTransaction = (filteredIndex) => {
                 localStorage.setItem("categoryExpenses", JSON.stringify(categoryExpenses));
             }
 
-            // Cập nhật lại giao diện
+            // Cập nhật giao diện
             renderTransactions();
             calculateTotalExpenses();
-          
 
             alert("Giao dịch đã được xóa thành công!");
-        } else {
-            alert("Không tìm thấy giao dịch trong danh sách gốc!");
         }
+    } else {
+        alert("Không tìm thấy giao dịch trong danh sách gốc!");
     }
 };
 
 
+
+// Cập nhật hàm `renderTransactions` để làm mới danh sách giao dịch ngay sau mỗi lần xóa
 const renderTransactions = () => {
     const list = document.getElementById("transactions-list");
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
@@ -480,7 +473,7 @@ const renderTransactions = () => {
 
     filteredTransactions.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sắp xếp theo ngày
 
-    filteredTransactions.forEach((transaction, index) => {
+    filteredTransactions.forEach((transaction) => {
         const transactionDate = new Date(transaction.date);
         const formattedDate = `${transactionDate.getDate()}, ${months[transactionDate.getMonth()]} ${transactionDate.getFullYear()}`;
 
@@ -511,14 +504,35 @@ const renderTransactions = () => {
             </div>
         `;
 
-        // Truyền `index` vào sự kiện `dblclick`
-        entry.addEventListener("dblclick", () => handleDeleteTransaction(index));
+        // Gắn thông tin giao dịch vào phần tử HTML
+        entry.setAttribute("data-date", transaction.date);
+        entry.setAttribute("data-category", transaction.category);
+        entry.setAttribute("data-amount", transaction.amount);
+
+        // Thêm sự kiện nhấp đúp để xóa giao dịch
+        entry.addEventListener("dblclick", (event) => {
+            const target = event.currentTarget;
+            handleDeleteTransaction(
+                target.getAttribute("data-date"),
+                target.getAttribute("data-category"),
+                target.getAttribute("data-amount")
+            );
+        });
+
         list.appendChild(entry);
     });
-
-    calculateTotalExpenses();
 };
 
+
+const addTransaction = (transaction) => {
+    const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+    transactions.push(transaction);
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+
+    // Cập nhật lại giao diện sau khi thêm giao dịch
+    renderTransactions();
+    calculateTotalExpenses();
+};
 
 
 

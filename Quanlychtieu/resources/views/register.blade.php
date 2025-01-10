@@ -95,7 +95,6 @@
     <script>
         document.getElementById('register-form').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const name = document.getElementById('register-name').value.trim();
             const email = document.getElementById('register-email').value.trim();
             const password = document.getElementById('register-password').value.trim();

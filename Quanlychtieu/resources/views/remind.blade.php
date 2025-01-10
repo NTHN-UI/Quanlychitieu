@@ -328,6 +328,7 @@
                     opacity: 1;
                 }
             }
+        }
     </style>
 </head>
 
@@ -555,6 +556,7 @@
 
                         alert('Thông tin nhắc nhở đã được cập nhật!');
                     });
+                
 
                     const updateReminder = async (index) => {
                         const reminder = {
@@ -623,6 +625,7 @@
                         // Thông báo thành công
                         alert(`Nhắc nhở "${title}" đã được thêm thành công!`);
                     });
+                
 
                     const displayFloatingNotifications = (notifications) => {
                         const notificationContainer = document.getElementById('floating-notifications');
@@ -675,12 +678,15 @@
                                 notifications.push(`Nhắc nhở: ${reminder.title} vào hôm nay.`);
                             }
                         });
+                    
 
                         // Lưu thông báo vào localStorage
                         if (notifications.length > 0) {
                             localStorage.setItem('todayNotifications', JSON.stringify(notifications));
                         }
+                    
                     };
+                
 
                     // Hiển thị thông báo khi tải trang
                     document.addEventListener('DOMContentLoaded', () => {
@@ -690,7 +696,7 @@
                             localStorage.removeItem('todayNotifications'); // Xóa thông báo sau khi hiển thị
                         }
                     });
-
+                
                     // Tự động kiểm tra nhắc nhở mỗi phút
                     setInterval(checkReminders, 60 * 1000);
 
@@ -707,7 +713,7 @@
                             userNameElem.textContent = currentUser;
                         } else {
                             userNameElem.textContent = "Khách";
-                        }
+                        } 
 
                         // Hiển thị và ẩn menu dropdown
                         const userMenu = document.getElementById("user-menu");
@@ -724,13 +730,14 @@
                             }
                         });
                     });
-
+                
                     // Đăng xuất
                     function logout() {
                         localStorage.removeItem("currentUser");
                         alert("Bạn đã đăng xuất!");
                         window.location.href = "login.blade.php";
                     }
+                
                 </script>
 </body>
 
