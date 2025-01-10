@@ -435,8 +435,6 @@ const handleDeleteTransaction = (date, category, amount) => {
 
                 localStorage.setItem("categoryExpenses", JSON.stringify(categoryExpenses));
             }
-
-            // Cập nhật giao diện
             renderTransactions();
             calculateTotalExpenses();
 
@@ -446,16 +444,11 @@ const handleDeleteTransaction = (date, category, amount) => {
         alert("Không tìm thấy giao dịch trong danh sách gốc!");
     }
 };
-
-
-
-// Cập nhật hàm `renderTransactions` để làm mới danh sách giao dịch ngay sau mỗi lần xóa
 const renderTransactions = () => {
     const list = document.getElementById("transactions-list");
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     list.innerHTML = "";
 
-    // Lọc giao dịch theo tháng hiện tại
     const filteredTransactions = transactions.filter(transaction => {
         const transactionDate = new Date(transaction.date);
         return (

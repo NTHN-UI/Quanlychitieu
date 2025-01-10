@@ -293,33 +293,37 @@
 
         <!-- Goals Section -->
         <section id="goal-section" class="mt-5">
-            <h2 class="section-title">Mục Tiêu Tài Chính</h2>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Thiết Lập Mục Tiêu</h5>
-                    <form id="goal-form">
-                        <div class="mb-3">
-                            <label for="goal-name" class="form-label">Tên Mục Tiêu</label>
-                            <input type="text" class="form-control" id="goal-name" placeholder="Ví dụ: Mua nhà" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="goal-amount" class="form-label">Số Tiền (VND)</label>
-                            <input type="number" class="form-control" id="goal-amount" placeholder="Nhập số tiền" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Lưu Mục Tiêu</button>
-                    </form>
+    <h2 class="section-title">Mục Tiêu Tài Chính</h2>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="goal-form">
+                <div class="mb-3">
+                    <label for="goal-name" class="form-label">Tên mục tiêu</label>
+                    <input type="text" class="form-control" id="goal-name" placeholder="VD: Mua nhà, Du lịch..." required>
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label for="goal-amount" class="form-label">Số tiền cần tiết kiệm</label>
+                    <input type="text" class="form-control" id="goal-amount" placeholder="Nhập số tiền " required>
+                </div>
+                <div class="mb-3">
+                    <label for="goal-savings" class="form-label">Số tiền tiết kiệm hàng tháng</label>
+                    <input type="text" class="form-control" id="goal-savings" placeholder="Nhập số tiền hàng tháng" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Thêm Mục Tiêu</button>
+            </form>
+        </div>
+    </div>
 
-            <!-- Goals Display -->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Danh Sách Mục Tiêu</h5>
-                    <ul id="goal-list" class="list-group">
-                    </ul>
-                </div>
-            </div>
-        </section>
+    <!-- Goals Display -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Danh Sách Mục Tiêu</h5>
+            <ul id="goal-list" class="list-group">
+                <!-- Goal items will be added dynamically -->
+            </ul>
+        </div>
+    </div>
+</section>
          </div>
     
     </div>
@@ -504,15 +508,204 @@ const addCustomCategoriesToDropdown = () => {
     });
 };
 
+const parseCurrency = (formattedAmount) => {
+    return parseFloat(formattedAmount.replace(/,/g, '')); // Loại bỏ dấu phẩy và chuyển thành số
+};
+
+
+const goalForm = document.getElementById('goal-form');
+    const goalList = document.getElementById('goal-list');
+
+
+    formatCurrencyInput(document.getElementById('goal-amount'));
+    formatCurrencyInput(document.getElementById('goal-savings'));
+
+    const saveGoalToLocalStorage = (goal) => {
+    const monthKey = `${currentMonthIndex}-${currentYear}`;
+    const goals = JSON.parse(localStorage.getItem(`goals-${monthKey}`)) || [];
+    
+    // Định dạng số tiền trước khi lưu
+    goal.targetAmount = formatCurrency(goal.targetAmount);
+    goal.saved = formatCurrency(goal.saved);
+    goal.monthlySavings = formatCurrency(goal.monthlySavings);
+
+    goals.push(goal);
+    localStorage.setItem(`goals-${monthKey}`, JSON.stringify(goals));
+};
+
+
+// Hàm lưu trạng thái dòng tiền vào localStorage
+const saveMonthlySavings = (monthKey, netBalance) => {
+    const monthlySavings = JSON.parse(localStorage.getItem('monthlySavings')) || {};
+    const formattedBalance = formatCurrency(netBalance); // Định dạng trước khi lưu
+    monthlySavings[monthKey] = formattedBalance;
+    localStorage.setItem('monthlySavings', JSON.stringify(monthlySavings));
+};
+
+
+// Hàm lấy trạng thái dòng tiền hiện tại từ localStorage
+const getMonthlySavings = (monthKey) => {
+    const monthlySavings = JSON.parse(localStorage.getItem('monthlySavings')) || {};
+    return monthlySavings[monthKey] || '0'; // Trả về chuỗi định dạng nếu có, nếu không trả về '0'
+};
+
+const loadGoalsFromLocalStorage = () => {
+    const monthKey = `${currentMonthIndex}-${currentYear}`;
+    const goals = JSON.parse(localStorage.getItem(`goals-${monthKey}`)) || [];
+    goalList.innerHTML = '';
+
+    goals.forEach((goal, index) => {
+        const progressPercent = Math.min((parseCurrency(goal.saved) / parseCurrency(goal.targetAmount)) * 100, 100).toFixed(2);
+
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+
+        li.innerHTML = `
+            <div>
+                <strong>${goal.name}</strong>
+                <p>Mục tiêu: ${goal.targetAmount} VND</p>
+                <p>Đã tiết kiệm: ${goal.saved} VND</p>
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: ${progressPercent}%;" 
+                         aria-valuenow="${progressPercent}" aria-valuemin="0" aria-valuemax="100">
+                         ${progressPercent}%
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="removeGoal(${index})">Xóa</button>
+        `;
+
+        goalList.appendChild(li);
+    });
+};
+
+
+
+const removeGoal = (index) => {
+    const monthKey = `${currentMonthIndex}-${currentYear}`;
+    const goals = JSON.parse(localStorage.getItem(`goals-${monthKey}`)) || [];
+    goals.splice(index, 1);
+    localStorage.setItem(`goals-${monthKey}`, JSON.stringify(goals));
+    loadGoalsFromLocalStorage();
+};
+
+goalForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('goal-name').value;
+    const targetAmount = parseFloat(document.getElementById('goal-amount').value.replace(/,/g, ''));
+    const monthlySavings = parseFloat(document.getElementById('goal-savings').value.replace(/,/g, ''));
+
+    const goal = {
+        name,
+        targetAmount,
+        saved: 0, // Số tiền đã tiết kiệm trong tháng
+        monthlySavings
+    };
+
+    saveGoalToLocalStorage(goal);
+    loadGoalsFromLocalStorage();
+    goalForm.reset();
+});
+document.addEventListener('DOMContentLoaded', () => {
+    loadGoalsFromLocalStorage();
+});
+
+    document.addEventListener('DOMContentLoaded', loadGoalsFromLocalStorage);
+    const calculateMonthlySavings = () => {
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    const monthlySavings = {};
+
+    transactions.forEach(transaction => {
+        const transactionDate = new Date(transaction.date);
+        const monthKey = `${transactionDate.getMonth() + 1}-${transactionDate.getFullYear()}`;
+        const amount = parseFloat(transaction.amount.replace(/,/g, '')); // Loại bỏ dấu phẩy trước khi tính
+
+        if (!monthlySavings[monthKey]) {
+            monthlySavings[monthKey] = 0;
+        }
+
+        if (transaction.type === 'income') {
+            monthlySavings[monthKey] += amount;
+        } else if (transaction.type === 'expense') {
+            monthlySavings[monthKey] -= amount;
+        }
+    });
+
+    for (const [monthKey, netBalance] of Object.entries(monthlySavings)) {
+        saveMonthlySavings(monthKey, netBalance); // Lưu với định dạng
+    }
+
+    const currentMonthKey = `${currentMonthIndex}-${currentYear}`;
+    return getMonthlySavings(currentMonthKey); // Trả về số tiền đã định dạng
+};
+
+
+const displaySavings = () => {
+    const monthKey = `${currentMonthIndex}-${currentYear}`;
+    const savings = getMonthlySavings(monthKey); // Lấy trực tiếp chuỗi đã định dạng
+    const savingsElem = document.getElementById('savings-display');
+
+    if (savingsElem) {
+        savingsElem.textContent = `${savings} VND`; // Hiển thị trực tiếp
+    }
+};
+
+
+
+
+
+
+
+// Gọi khi tải trang hoặc khi chuyển tháng
+document.addEventListener('DOMContentLoaded', () => {
+    const currentMonthKey = `${currentMonthIndex}-${currentYear}`;
+    calculateMonthlySavings(); // Tính toán dòng tiền
+    updateGoalProgressWithSavings(); // Cập nhật tiến độ mục tiêu nếu có thay đổi
+    displaySavings(); // Hiển thị dòng tiền
+    loadGoalsFromLocalStorage(); // Hiển thị mục tiêu
+});
+const updateGoalProgressWithSavings = () => {
+    const monthKey = `${currentMonthIndex}-${currentYear}`;
+    const goals = JSON.parse(localStorage.getItem(`goals-${monthKey}`)) || [];
+    const netBalance = parseCurrency(getMonthlySavings(monthKey)); // Lấy số tiền từ localStorage
+
+    goals.forEach(goal => {
+        // Không cộng dồn, chỉ cập nhật đúng giá trị từ monthlySavings
+        goal.saved = formatCurrency(netBalance); // Lưu lại định dạng số tiền đã tiết kiệm
+    });
+
+    localStorage.setItem(`goals-${monthKey}`, JSON.stringify(goals));
+    loadGoalsFromLocalStorage(); // Hiển thị lại danh sách mục tiêu
+};
+
+
+
+
+
+
+const addTransaction = (transaction) => {
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    transactions.push(transaction);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+
+    calculateMonthlySavings(); // Cập nhật dòng tiền
+    updateGoalProgressWithSavings(); // Cập nhật mục tiêu tiết kiệm
+    displaySavings(); // Cập nhật hiển thị dòng tiền
+};
+
+
 
 
 // Gọi `checkBudgetAndDisplayAlert` khi cần
 document.addEventListener('DOMContentLoaded', () => {
     renderMonthHeader();
-    loadBudgetsFromLocalStorage();
-    checkBudgetAndDisplayAlert(); 
-    addCustomCategoriesToDropdown();// Kiểm tra cảnh báo khi tải trang
-    generateForecast();
+    calculateMonthlySavings(); // Tính toán và lưu dòng tiền
+    displaySavings(); // Hiển thị dòng tiền
+    loadGoalsFromLocalStorage(); // Hiển thị mục tiêu
+    updateGoalProgressWithSavings(); // Cập nhật tiến độ mục tiêu
+    loadBudgetsFromLocalStorage(); // Hiển thị ngân sách
+    checkBudgetAndDisplayAlert(); // Hiển thị cảnh báo
 });
 
 const switchMonth = (direction) => {
@@ -528,7 +721,10 @@ const switchMonth = (direction) => {
     renderMonthHeader(); // Cập nhật tiêu đề tháng
     loadBudgetsFromLocalStorage(); // Tải ngân sách cho tháng mới
     checkBudgetAndDisplayAlert(); // Cập nhật cảnh báo
-    generateForecast();
+    generateForecast(); // Cập nhật dự báo
+    loadGoalsFromLocalStorage(); // Hiển thị mục tiêu của tháng
+    displaySavings(); // Hiển thị dòng tiền của tháng
+    updateGoalProgressWithSavings(); // Cập nhật tiến độ tiết kiệm
 };
 
 document.addEventListener("DOMContentLoaded", () => {
