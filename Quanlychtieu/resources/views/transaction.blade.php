@@ -222,38 +222,6 @@ const formatCurrency = (amount) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');  // Thêm dấu phẩy ở mỗi ba chữ số
 };
 
-const checkBudgetAndDisplayAlert = () => {
-    const budgets = JSON.parse(localStorage.getItem('budgets')) || {}; // Lấy ngân sách từ localStorage
-    const categoryExpenses = JSON.parse(localStorage.getItem('categoryExpenses')) || {}; // Lấy chi tiêu từ localStorage
-    const currentMonthKey = `${currentMonthIndex}-${currentYear}`;
-    const monthExpenses = categoryExpenses[currentMonthKey] || {}; // Chi tiêu của tháng hiện tại
-    const budgetAlert = document.getElementById('budget-alert'); // Vị trí hiển thị cảnh báo
-
-    let alertMessage = '';
-
-    // Lặp qua các danh mục chi tiêu trong tháng hiện tại
-    for (const [category, expenseAmount] of Object.entries(monthExpenses)) {
-        const expenseValue = parseFloat(expenseAmount) || 0; // Tổng chi tiêu thực tế
-        const budgetAmount = parseFloat((budgets[currentMonthKey]?.[category] || '0')) || 0; // Ngân sách đã đặt
-
-        if (budgetAmount > 0 && expenseValue > budgetAmount) {
-            // Nếu vượt ngân sách, tạo thông báo
-            const categoryName = category.includes('|') ? category.split('|')[1] : category; // Lấy tên danh mục
-            const icon = category.split('|')[0] || ''; // Lấy icon từ danh mục
-            alertMessage += `
-                <p>${icon} <strong>${categoryName}</strong> vượt ngân sách!
-                Chi tiêu: <strong>${formatCurrency(expenseValue)}</strong> VND,
-                Ngân sách: <strong>${formatCurrency(budgetAmount)}</strong> VND.</p>`;
-        }
-    }
-
-    // Hiển thị thông báo nếu có
-    if (alertMessage) {
-        budgetAlert.innerHTML = `<div class="alert alert-danger">${alertMessage}</div>`;
-    } else {
-        budgetAlert.innerHTML = ''; // Xóa thông báo nếu không vượt ngân sách
-    }
-};
 
 const calculateTotalExpenses = () => {
     const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
@@ -319,61 +287,6 @@ const calculateTotalExpenses = () => {
     }
 };
 
-
-
-
-const renderTransactions = () => {
-    const list = document.getElementById("transactions-list");
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    list.innerHTML = "";
-
-    const filteredTransactions = transactions.filter(transaction => {
-        const transactionDate = new Date(transaction.date);
-        return (
-            transactionDate.getMonth() + 1 === currentMonthIndex &&
-            transactionDate.getFullYear() === currentYear
-        );
-    });
-
-    if (filteredTransactions.length === 0) {
-        list.innerHTML = '<p class="no-transactions">Không có giao dịch nào trong tháng này.</p>';
-        return;
-    }
-
-    let currentDay = "";
-
-    filteredTransactions.forEach((transaction, index) => {
-        const transactionDate = new Date(transaction.date);
-        const formattedDate = `${transactionDate.getDate()}, ${months[transactionDate.getMonth()]} ${transactionDate.getFullYear()}`;
-
-        if (formattedDate !== currentDay) {
-            currentDay = formattedDate;
-            const dayHeader = document.createElement("div");
-            dayHeader.className = "transaction-day";
-            dayHeader.textContent = formattedDate;
-            list.appendChild(dayHeader);
-        }
-
-        const entry = document.createElement("div");
-        entry.className = "transaction-entry";
-
-        entry.innerHTML = `
-            <div class="icon">${transaction.icon || "💰"}</div>
-            <div class="details">
-                <p class="description">${transaction.description}</p>
-                <p class="category">${transaction.category}</p>
-            </div>
-            <div class="amount">${transaction.amount}₫</div>
-        `;
-
-        // Thêm sự kiện xóa
-        entry.addEventListener("dblclick", () => handleDeleteTransaction(index));
-        list.appendChild(entry);
-    });
-
-    calculateTotalExpenses();
-};
-
 const handleDeleteTransaction = (filteredIndex) => {
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     const categoryExpenses = JSON.parse(localStorage.getItem("categoryExpenses")) || {};
@@ -432,7 +345,7 @@ const handleDeleteTransaction = (filteredIndex) => {
             // Cập nhật lại giao diện
             renderTransactions();
             calculateTotalExpenses();
-            checkBudgetAndDisplayAlert();
+          
 
             alert("Giao dịch đã được xóa thành công!");
         } else {
@@ -440,6 +353,139 @@ const handleDeleteTransaction = (filteredIndex) => {
         }
     }
 };
+
+
+const renderTransactions = () => {
+    const list = document.getElementById("transactions-list");
+    const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+    list.innerHTML = "";
+
+    // Lọc giao dịch theo tháng hiện tại
+    const filteredTransactions = transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.date);
+        return (
+            transactionDate.getMonth() + 1 === currentMonthIndex &&
+            transactionDate.getFullYear() === currentYear
+        );
+    });
+
+    if (filteredTransactions.length === 0) {
+        list.innerHTML = '<p class="no-transactions">Không có giao dịch nào trong tháng này.</p>';
+        return;
+    }
+
+    let currentDay = "";
+
+    filteredTransactions.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sắp xếp theo ngày
+
+    filteredTransactions.forEach((transaction, index) => {
+        const transactionDate = new Date(transaction.date);
+        const formattedDate = `${transactionDate.getDate()}, ${months[transactionDate.getMonth()]} ${transactionDate.getFullYear()}`;
+
+        // Hiển thị ngày nếu khác ngày trước đó
+        if (formattedDate !== currentDay) {
+            currentDay = formattedDate;
+            const dayHeader = document.createElement("div");
+            dayHeader.className = "transaction-day";
+            dayHeader.textContent = formattedDate;
+            list.appendChild(dayHeader);
+        }
+
+        // Tạo giao diện hiển thị giao dịch
+        const entry = document.createElement("div");
+        entry.className = "transaction-entry";
+
+        const description = transaction.description || "Không có mô tả";
+        const category = transaction.category || "Không có danh mục";
+
+        entry.innerHTML = `
+            <div class="icon">${transaction.icon || "💰"}</div>
+            <div class="details">
+                <p class="description">${description}</p>
+                <p class="category">${category}</p>
+            </div>
+            <div class="amount ${transaction.type === "expense" ? "text-danger" : "text-success"}">
+                ${formatCurrency(transaction.amount)}₫
+            </div>
+        `;
+
+        // Truyền `index` vào sự kiện `dblclick`
+        entry.addEventListener("dblclick", () => handleDeleteTransaction(index));
+        list.appendChild(entry);
+    });
+
+    calculateTotalExpenses();
+};
+
+
+
+
+document.getElementById("export-sql").addEventListener("click", () => {
+    const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+    const categoryExpenses = JSON.parse(localStorage.getItem("categoryExpenses")) || {};
+
+    if (transactions.length === 0) {
+        alert("Không có giao dịch nào để xuất!");
+        return;
+    }
+
+    // Tạo câu lệnh SQL cho bảng transactions
+    let sqlContent = `
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            date DATE NOT NULL,
+            category VARCHAR(255) NOT NULL,
+            amount DECIMAL(15, 2) NOT NULL,
+            type ENUM('income', 'expense') NOT NULL,
+            icon VARCHAR(10) DEFAULT NULL
+        );
+
+        INSERT INTO transactions (date, category, amount, type, icon) VALUES
+    `;
+
+    transactions.forEach((transaction, index) => {
+        const date = transaction.date;
+        const category = transaction.category.replace(/'/g, "''"); // Escape ký tự đặc biệt
+        const amount = transaction.amount.replace(/,/g, ""); // Loại bỏ dấu phẩy
+        const type = transaction.type;
+        const icon = transaction.icon || "💰";
+
+        sqlContent += `('${date}', '${category}', ${amount}, '${type}', '${icon}')${
+            index < transactions.length - 1 ? "," : ";"
+        }\n`;
+    });
+
+    // Tạo câu lệnh SQL cho tổng chi tiêu theo danh mục
+    sqlContent += `
+        CREATE TABLE IF NOT EXISTS category_totals (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            month_key VARCHAR(7) NOT NULL,
+            category VARCHAR(255) NOT NULL,
+            total_amount DECIMAL(15, 2) NOT NULL
+        );
+
+        INSERT INTO category_totals (month_key, category, total_amount) VALUES
+    `;
+
+    let totalEntries = [];
+    Object.keys(categoryExpenses).forEach(monthKey => {
+        const monthExpenses = categoryExpenses[monthKey];
+        for (const [category, amount] of Object.entries(monthExpenses)) {
+            const totalAmount = parseFloat(amount.replace(/,/g, "")); // Không thêm `.00`
+            totalEntries.push(`('${monthKey}', '${category.replace(/'/g, "''")}', ${totalAmount})`);
+        }
+    });
+
+    sqlContent += totalEntries.join(",\n") + ";";
+
+    // Tải file SQL
+    const blob = new Blob([sqlContent], { type: "text/sql" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "transactions_and_totals.sql";
+    link.click();
+});
+
 
 
 const switchMonth = (direction) => {
@@ -455,7 +501,7 @@ const switchMonth = (direction) => {
     renderMonthHeader();
     renderTransactions();
     calculateTotalExpenses();
-    checkBudgetAndDisplayAlert();
+   
   
 };
 
@@ -467,7 +513,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderMonthHeader();
     renderTransactions();
     calculateTotalExpenses();
-    checkBudgetAndDisplayAlert();
+    
+
 });
 
 
