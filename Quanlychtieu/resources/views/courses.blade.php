@@ -233,15 +233,17 @@
                 description: "Học cách quản lý thu nhập, chi tiêu và đầu tư hiệu quả.",
                 price: 199000,
                 image: "https://via.placeholder.com/300x200",
-                video: "https://www.w3schools.com/html/mov_bbb.mp4"
+                video: "https://www.w3schools.com/html/mov_bbb.mp4",
+                link: "https://www.investopedia.com/terms/f/financial-management.asp"
             },
-            {
+                {
                 id: 2,
                 title: "Đầu tư Cơ bản",
                 description: "Hướng dẫn đầu tư tài chính an toàn và hiệu quả cho người mới.",
                 price: 299000,
                 image: "https://via.placeholder.com/300x200",
-                video: "https://www.w3schools.com/html/movie.mp4"
+                video: "https://www.w3schools.com/html/movie.mp4",
+                link: "https://www.hsbc.com.vn/investments/financial-planning/personal-financial-management/"
             },
             {
                 id: 3,
@@ -249,7 +251,8 @@
                 description: "Những kiến thức cơ bản để bắt đầu đầu tư vào chứng khoán.",
                 price: 399000,
                 image: "https://via.placeholder.com/300x200",
-                video: "https://www.w3schools.com/html/mov_bbb.mp4"
+                video: "https://www.w3schools.com/html/mov_bbb.mp4",
+                link: "https://hpm.edu.vn/khoa_hoc_public/khoa-hoc-quan-ly-va-dau-tu-tai-chinh-ca-nhan-hieu-qua/"
             },
             {
                 id: 4,
@@ -257,7 +260,9 @@
                 description: "Học cách lập kế hoạch ngân sách và tiết kiệm hiệu quả.",
                 price: 249000,
                 image: "https://via.placeholder.com/300x200",
-                video: "https://www.w3schools.com/html/movie.mp4"
+                video: "https://www.w3schools.com/html/movie.mp4",
+                link: "https://hpm.edu.vn/khoa_hoc_public/khoa-hoc-quan-ly-va-dau-tu-tai-chinh-ca-nhan-hieu-qua/"
+
             },
             {
                 id: 5,
@@ -265,8 +270,9 @@
                 description: "Khóa học toàn diện về tài chính cá nhân và lập kế hoạch dài hạn.",
                 price: 459000,
                 image: "https://via.placeholder.com/300x200",
-                video: "https://www.w3schools.com/html/mov_bbb.mp4"
-            }
+                video: "https://www.w3schools.com/html/mov_bbb.mp4",
+                link: "https://hpm.edu.vn/khoa_hoc_public/khoa-hoc-quan-ly-va-dau-tu-tai-chinh-ca-nhan-hieu-qua/ "        
+            },
         ];
 
         // Hiển thị danh sách khóa học
@@ -335,20 +341,27 @@
 
         // Xem nội dung khóa học
         function startCourse(courseId) {
-            const purchasedCourses = JSON.parse(localStorage.getItem('purchasedCourses')) || [];
-            const course = purchasedCourses.find(course => course.id === courseId);
+    const purchasedCourses = JSON.parse(localStorage.getItem('purchasedCourses')) || [];
+    const course = purchasedCourses.find(course => course.id === courseId);
 
-            if (!course) {
-                alert("Khóa học này chưa được mua!");
-                return;
-            }
+    if (!course) {
+        alert("Khóa học này chưa được mua!");
+        return;
+    }
 
-            document.getElementById('course-content').style.display = 'block';
-            document.getElementById('content').innerHTML = `
-                <h3>${course.title}</h3>
-                <video controls width="100%" src="${course.video}"></video>
-            `;
-        }
+    document.getElementById('course-content').style.display = 'block';
+    document.getElementById('content').innerHTML = `
+        <h3>${course.title}</h3>
+        <video controls width="100%" src="${course.video}"></video>
+        <p class="mt-3">
+            Xem thêm nội dung chi tiết tại: 
+            <a href="${course.link}" target="_blank" rel="noopener noreferrer">
+                Nhấn vào đây
+            </a>
+        </p>
+    `;
+}
+
 
         // Gọi hàm khi tải trang
         showPurchasedCourses();
