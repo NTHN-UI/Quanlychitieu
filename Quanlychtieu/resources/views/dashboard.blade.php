@@ -194,8 +194,8 @@
                 <li class="nav-item"><a href="expense.blade.php" class="nav-link">Chi tiêu</a></li>
                 <li class="nav-item"><a href="transaction.blade.php" class="nav-link">Sổ giao dịch</a></li>
                 <li class="nav-item"><a href="remind.blade.php" class="nav-link">Nhắc nhở</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Phân tích</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Cài đặt</a></li>
+                <li class="nav-item"><a href="bugdget.blade.php" class="nav-link">Ngân sác</a></li>
+                <li class="nav-item"><a href="setting.blade.php" class="nav-link">Cài đặt</a></li>
             </ul>
         </nav>
         <div class="main-content">

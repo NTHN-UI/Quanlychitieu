@@ -205,217 +205,213 @@
 
     <script>
         const months = [
-            "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
-            "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
-        ];
+    "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+    "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+];
 
-        let currentMonthIndex = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
+let currentMonthIndex = new Date().getMonth() + 1; // Tháng bắt đầu từ 1
+let currentYear = new Date().getFullYear();
 
-        const renderMonthHeader = () => {
-            const monthHeader = document.getElementById("current-month");
-            monthHeader.textContent = `${months[currentMonthIndex]}, ${currentYear}`;
-        };
-        // Định nghĩa hàm formatCurrency trước khi sử dụng nó
-// Định dạng số tiền với dấu phân cách là dấu phẩy (",")
+const renderMonthHeader = () => {
+    const monthHeader = document.getElementById("current-month");
+    monthHeader.textContent = `${months[currentMonthIndex - 1]}, ${currentYear}`;
+};
+
+// Định nghĩa hàm formatCurrency
 const formatCurrency = (amount) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');  // Thêm dấu phẩy ở mỗi ba chữ số
 };
+
 const checkBudgetAndDisplayAlert = () => {
     const budgets = JSON.parse(localStorage.getItem('budgets')) || {}; // Lấy ngân sách từ localStorage
     const categoryExpenses = JSON.parse(localStorage.getItem('categoryExpenses')) || {}; // Lấy chi tiêu từ localStorage
+    const currentMonthKey = `${currentMonthIndex}-${currentYear}`;
+    const monthExpenses = categoryExpenses[currentMonthKey] || {}; // Chi tiêu của tháng hiện tại
     const budgetAlert = document.getElementById('budget-alert'); // Vị trí hiển thị cảnh báo
 
     let alertMessage = '';
 
-    // Lặp qua các danh mục chi tiêu trong categoryExpenses
-    for (const [category, expenseAmount] of Object.entries(categoryExpenses)) {
-        const expenseValue = parseFloat(expenseAmount.replace(/,/g, '')) || 0; // Tổng chi tiêu thực tế
-        const budgetAmount = parseFloat((budgets[category] || '0').replace(/,/g, '')) || 0; // Ngân sách đã đặt (hoặc 0 nếu không có)
+    // Lặp qua các danh mục chi tiêu trong tháng hiện tại
+    for (const [category, expenseAmount] of Object.entries(monthExpenses)) {
+        const expenseValue = parseFloat(expenseAmount) || 0; // Tổng chi tiêu thực tế
+        const budgetAmount = parseFloat((budgets[currentMonthKey]?.[category] || '0')) || 0; // Ngân sách đã đặt
 
         if (budgetAmount > 0 && expenseValue > budgetAmount) {
             // Nếu vượt ngân sách, tạo thông báo
             const categoryName = category.includes('|') ? category.split('|')[1] : category; // Lấy tên danh mục
-            const icon = categoryIcons[category] || ''; // Lấy icon của danh mục
+            const icon = category.split('|')[0] || ''; // Lấy icon từ danh mục
             alertMessage += `
-                <p>${icon} <strong>${categoryName}</strong> vượt ngân sách! 
-                Chi tiêu: <strong>${expenseAmount}</strong> VND, 
+                <p>${icon} <strong>${categoryName}</strong> vượt ngân sách!
+                Chi tiêu: <strong>${formatCurrency(expenseValue)}</strong> VND,
                 Ngân sách: <strong>${formatCurrency(budgetAmount)}</strong> VND.</p>`;
         }
     }
 
     // Hiển thị thông báo nếu có
     if (alertMessage) {
-        budgetAlert.innerHTML = `
-            <div class="alert alert-danger">
-                ${alertMessage}
-            </div>`;
+        budgetAlert.innerHTML = `<div class="alert alert-danger">${alertMessage}</div>`;
     } else {
         budgetAlert.innerHTML = ''; // Xóa thông báo nếu không vượt ngân sách
     }
 };
 
-// Hàm tính tổng chi tiêu cho từng danh mục từ giao dịch
 const calculateTotalExpenses = () => {
     const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    const categoryExpenses = {};  // Dùng để lưu tổng chi tiêu cho mỗi danh mục
+    const categoryExpenses = JSON.parse(localStorage.getItem('categoryExpenses')) || {}; // Lấy dữ liệu đã lưu trước đó
 
-    // Duyệt qua các giao dịch và tính tổng chi tiêu cho từng danh mục
+    // Dùng để kiểm tra tổng số tiền hiện tại trước khi cộng
+    const newCategoryExpenses = {};
+
+    // Tính tổng chi tiêu cho từng tháng từ danh sách giao dịch
     transactions.forEach(tx => {
-        if (tx.amount && tx.category) {  // Kiểm tra nếu có số tiền và danh mục
-            const amount = parseFloat(tx.amount.replace(/,/g, '')) || 0;  // Loại bỏ dấu phân cách
-            categoryExpenses[tx.category] = (categoryExpenses[tx.category] || 0) + amount;
+        const transactionDate = new Date(tx.date);
+        const transactionMonth = transactionDate.getMonth() + 1; // Lấy tháng từ 1-12
+        const transactionYear = transactionDate.getFullYear();
+        const monthKey = `${transactionMonth}-${transactionYear}`; // Tạo khóa cho từng tháng
+
+        // Bỏ qua nếu đây là khoản thu
+        if (tx.type && tx.type.toLowerCase() === 'income') {
+            return; // Bỏ qua khoản thu
         }
+
+        // Khởi tạo đối tượng cho tháng nếu chưa tồn tại
+        if (!newCategoryExpenses[monthKey]) {
+            newCategoryExpenses[monthKey] = {};
+        }
+
+        const category = tx.category;
+        const rawAmount = tx.amount.replace(/,/g, '').trim(); // Loại bỏ dấu phẩy và khoảng trắng
+        const amount = parseFloat(rawAmount) || 0; // Chuyển thành số nguyên thủy
+        const icon = tx.icon || "💰"; // Lấy icon từ giao dịch hoặc mặc định là 💰
+
+        // Cộng dồn chi tiêu theo danh mục
+        if (!newCategoryExpenses[monthKey][`${icon} ${category}`]) {
+            newCategoryExpenses[monthKey][`${icon} ${category}`] = 0; // Bắt đầu từ 0
+        }
+
+        newCategoryExpenses[monthKey][`${icon} ${category}`] += amount; // Cộng dồn
     });
 
-    // Lưu tổng chi tiêu cho từng danh mục vào localStorage dưới dạng số
-    // Sau đó định dạng lại số tiền với dấu phân cách và lưu lại
-    const formattedCategoryExpenses = {};
-    for (const [category, totalAmount] of Object.entries(categoryExpenses)) {
-        formattedCategoryExpenses[category] = formatCurrency(totalAmount);  // Định dạng lại số tiền
+    // Kiểm tra nếu dữ liệu không thay đổi, không cần ghi đè
+    let hasChanges = false;
+    for (const monthKey in newCategoryExpenses) {
+        if (!categoryExpenses[monthKey]) {
+            categoryExpenses[monthKey] = {};
+            hasChanges = true;
+        }
+
+        for (const categoryKey in newCategoryExpenses[monthKey]) {
+            const newTotal = newCategoryExpenses[monthKey][categoryKey];
+            const currentTotal = parseFloat(
+                (categoryExpenses[monthKey][categoryKey] || '0').toString().replace(/,/g, '')
+            ) || 0;
+
+            if (newTotal !== currentTotal) {
+                categoryExpenses[monthKey][categoryKey] = newTotal.toLocaleString('en-US'); // Định dạng số tiền
+                hasChanges = true; // Đánh dấu có thay đổi
+            }
+        }
     }
 
-    // Lưu lại tổng chi tiêu đã định dạng vào localStorage
-    localStorage.setItem('categoryExpenses', JSON.stringify(formattedCategoryExpenses));
-
-    return formattedCategoryExpenses;
-
-     checkBudgetAndDisplayAlert(); // Kiểm tra ngân sách
-     
+    // Chỉ lưu vào LocalStorage nếu có thay đổi
+    if (hasChanges) {
+        localStorage.setItem('categoryExpenses', JSON.stringify(categoryExpenses));
+    }
 };
 
 
 
 
-        const renderTransactions = () => {
-            const list = document.getElementById("transactions-list");
-            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-            list.innerHTML = "";
+const renderTransactions = () => {
+    const list = document.getElementById("transactions-list");
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    list.innerHTML = "";
 
-            const filteredTransactions = transactions.filter(transaction => {
-                const transactionDate = new Date(transaction.date);
-                return transactionDate.getMonth() === currentMonthIndex && transactionDate.getFullYear() === currentYear;
-            });
+    const filteredTransactions = transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.date);
+        return (
+            transactionDate.getMonth() + 1 === currentMonthIndex &&
+            transactionDate.getFullYear() === currentYear
+        );
+    });
 
-            if (filteredTransactions.length === 0) {
-                list.innerHTML = '<p class="no-transactions">Không có giao dịch nào trong tháng này.</p>';
-                return;
-            }
-
-            let currentDay = "";
-
-            filteredTransactions.forEach((transaction, index) => { // Thêm `index` vào callback
-    const transactionDate = new Date(transaction.date);
-    const formattedDate = `${transactionDate.getDate()}, ${months[transactionDate.getMonth()]} ${transactionDate.getFullYear()}`;
-
-    if (formattedDate !== currentDay) {
-        currentDay = formattedDate;
-        const dayHeader = document.createElement("div");
-        dayHeader.className = "transaction-day";
-        dayHeader.textContent = formattedDate;
-        list.appendChild(dayHeader);
+    if (filteredTransactions.length === 0) {
+        list.innerHTML = '<p class="no-transactions">Không có giao dịch nào trong tháng này.</p>';
+        return;
     }
 
-    const entry = document.createElement("div");
-    entry.className = "transaction-entry";
+    let currentDay = "";
 
-    entry.innerHTML = `
-        <div class="icon">${transaction.icon || "💰"}</div>
-        <div class="details">
-            <p class="description">${transaction.description}</p>
-            <p class="category">${transaction.category}</p>
-        </div>
-        <div class="amount">${transaction.amount}₫</div>
-    `;
+    filteredTransactions.forEach((transaction, index) => {
+        const transactionDate = new Date(transaction.date);
+        const formattedDate = `${transactionDate.getDate()}, ${months[transactionDate.getMonth()]} ${transactionDate.getFullYear()}`;
 
-    // Thêm sự kiện xóa
-    entry.addEventListener("dblclick", () => handleDeleteTransaction(index)); // Sử dụng `index`
-    list.appendChild(entry);
-});
-    // Tính tổng chi tiêu cho từng danh mục
-    calculateTotalExpenses();
-
+        if (formattedDate !== currentDay) {
+            currentDay = formattedDate;
+            const dayHeader = document.createElement("div");
+            dayHeader.className = "transaction-day";
+            dayHeader.textContent = formattedDate;
+            list.appendChild(dayHeader);
         }
 
-      // Hàm xóa giao dịch và tính lại tổng chi tiêu
+        const entry = document.createElement("div");
+        entry.className = "transaction-entry";
+
+        entry.innerHTML = `
+            <div class="icon">${transaction.icon || "💰"}</div>
+            <div class="details">
+                <p class="description">${transaction.description}</p>
+                <p class="category">${transaction.category}</p>
+            </div>
+            <div class="amount">${transaction.amount}₫</div>
+        `;
+
+        // Thêm sự kiện xóa
+        entry.addEventListener("dblclick", () => handleDeleteTransaction(index));
+        list.appendChild(entry);
+    });
+
+    calculateTotalExpenses();
+};
+
 const handleDeleteTransaction = (index) => {
     const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
     const transaction = transactions[index];
 
     if (confirm(`Bạn có chắc chắn muốn xóa giao dịch: "${transaction.description}"?`)) {
-        // Xóa giao dịch trong mảng
         transactions.splice(index, 1);
-        // Lưu lại vào localStorage
         localStorage.setItem("transactions", JSON.stringify(transactions));
-
-        // Cập nhật tổng chi tiêu sau khi xóa
         calculateTotalExpenses();
-
         alert("Giao dịch đã được xóa thành công!");
     }
 };
 
-        const switchMonth = (direction) => {
-            currentMonthIndex += direction;
-            if (currentMonthIndex < 0) {
-                currentMonthIndex = 11;
-                currentYear -= 1;
-            } else if (currentMonthIndex > 11) {
-                currentMonthIndex = 0;
-                currentYear += 1;
-            }
-
-            renderMonthHeader();
-            renderTransactions();
-        };
-
-        document.getElementById("prev-month").addEventListener("click", () => switchMonth(-1));
-        document.getElementById("next-month").addEventListener("click", () => switchMonth(1));
-
-        // Initial render
-        renderMonthHeader();
-        renderTransactions();
-
-
-
-    function exportTransactionsToSQL() {
-        // Lấy dữ liệu từ localStorage
-        const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
-
-        // Tạo bảng SQL
-        let sqlStatements = `
-            CREATE TABLE transactions (
-                date TEXT,
-                type TEXT,
-                amount REAL,
-                category TEXT,
-                description TEXT
-            );\n`;
-
-        // Thêm dữ liệu vào bảng
-        transactions.forEach(transaction => {
-            const {  date, type, amount, category, description } = transaction;
-            sqlStatements += `INSERT INTO transactions ( date, type, amount, category, description) 
-                VALUES ('${date}', '${type}', ${amount}, '${category.replace(/'/g, "''")}', '${description.replace(/'/g, "''")}');\n`;
-        });
-
-        // Tải file SQL
-        const blob = new Blob([sqlStatements], { type: "text/sql" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "transactions.sql";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+const switchMonth = (direction) => {
+    currentMonthIndex += direction;
+    if (currentMonthIndex < 1) {
+        currentMonthIndex = 12;
+        currentYear -= 1;
+    } else if (currentMonthIndex > 12) {
+        currentMonthIndex = 1;
+        currentYear += 1;
     }
-    const addTransaction = (category, amount, description, date) => {
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    transactions.push({ category, amount, description, date });
-    localStorage.setItem('transactions', JSON.stringify(transactions));
 
-    calculateTotalExpenses(); // Tính lại tổng chi tiêu
+    renderMonthHeader();
+    renderTransactions();
+    calculateTotalExpenses();
+    checkBudgetAndDisplayAlert();
 };
 
+document.getElementById("prev-month").addEventListener("click", () => switchMonth(-1));
+document.getElementById("next-month").addEventListener("click", () => switchMonth(1));
+
+// Initial render
+document.addEventListener('DOMContentLoaded', () => {
+    renderMonthHeader();
+    renderTransactions();
+    calculateTotalExpenses();
+    checkBudgetAndDisplayAlert();
+});
 
 
  

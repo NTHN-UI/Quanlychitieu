@@ -109,6 +109,12 @@
     <div class="main-content">
         <!-- Budget Section -->
          <div class="container">
+         <div class="month-navigation d-flex justify-content-between align-items-center mb-4">
+    <span id="prev-budget-month">&lt;</span>
+    <h2 id="current-budget-month">Tháng 1, 2025</h2>
+    <span id="next-budget-month">&gt;</span>
+</div>
+
          <section id="budget-section">
             <h2 class="section-title">Quản Lý Ngân Sách</h2>
             <div class="card mb-4">
@@ -118,19 +124,19 @@
                             <label for="budget-category" class="form-label">Danh mục</label>
                             <select class="form-select" id="budget-category" required>
                                         <option value="" selected disabled>Chọn danh mục</option>
-                                        <option value="🍔|Ăn uống">🍔 Ăn uống</option>
-                                        <option value="🛍️|Mua sắm">🛍️ Mua sắm</option>
-                                        <option value="🎮|Giải trí">🎮 Giải trí</option>
-                                        <option value="📚|Học tập">📚 Học tập</option>
-                                        <option value="🛒|Chợ, siêu thị">🛒 Chợ, siêu thị</option>
-                                        <option value="🚗|Di chuyển">🚗 Di chuyển</option>
-                                        <option value="💅|Làm đẹp">💅 Làm đẹp</option>
-                                        <option value="❤️|Sức khỏe">❤️ Sức khỏe</option>
-                                        <option value="🎁|Từ thiện">🎁 Từ thiện</option>
-                                        <option value="💳|Trả nợ">💳 Trả nợ</option>
-                                        <option value="🧾|Hóa đơn">🧾 Hóa đơn</option>
-                                        <option value="🏠|Nhà cửa">🏠 Nhà cửa</option>
-                                        <option value="👨‍👩‍👧‍👦|Người thân">👨‍👩‍👧‍👦 Người thân</option>
+                                        <option value="🍔 Ăn uống">🍔 Ăn uống</option>
+                                        <option value="🛍️ Mua sắm">🛍️ Mua sắm</option>
+                                        <option value="🎮 Giải trí">🎮 Giải trí</option>
+                                        <option value="📚 Học tập">📚 Học tập</option>
+                                        <option value="🛒 Chợ, siêu thị">🛒 Chợ, siêu thị</option>
+                                        <option value="🚗 Di chuyển">🚗 Di chuyển</option>
+                                        <option value="💅 Làm đẹp">💅 Làm đẹp</option>
+                                        <option value="❤️ Sức khỏe">❤️ Sức khỏe</option>
+                                        <option value="🎁 Từ thiện">🎁 Từ thiện</option>
+                                        <option value="💳 Trả nợ">💳 Trả nợ</option>
+                                        <option value="🧾 Hóa đơn">🧾 Hóa đơn</option>
+                                        <option value="🏠 Nhà cửa">🏠 Nhà cửa</option>
+                                        <option value="👨‍👩‍👧‍👦 Người thân">👨‍👩‍👧‍👦 Người thân</option>
 
                                     </select>
                         </div>
@@ -221,198 +227,169 @@ const categoryIcons = {
     "🏠|Nhà cửa": "🏠",
     "👨‍👩‍👧‍👦|Người thân": "👨‍👩‍👧‍👦",
 };
-// Hàm định dạng số tiền với dấu phẩy khi người dùng nhập
+
+// Dữ liệu tháng
+const months = [
+    "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+    "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+];
+
+let currentMonthIndex = new Date().getMonth() + 1; // Tháng bắt đầu từ 1
+let currentYear = new Date().getFullYear();
+
+// Hàm hiển thị tháng hiện tại
+const renderMonthHeader = () => {
+    const monthHeader = document.getElementById('current-budget-month');
+    monthHeader.textContent = `${months[currentMonthIndex - 1]}, ${currentYear}`;
+};
+
+
+
+// Gắn sự kiện chuyển tháng
+document.getElementById('prev-budget-month').addEventListener('click', () => switchMonth(-1));
+document.getElementById('next-budget-month').addEventListener('click', () => switchMonth(1));
+
+// Hàm định dạng số tiền
+const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');  // Thêm dấu phẩy ở mỗi ba chữ số
+};
+
 const formatCurrencyInput = (input) => {
     input.addEventListener('input', (e) => {
         let value = e.target.value.replace(/,/g, ''); // Loại bỏ dấu phẩy trước
         if (!isNaN(value)) {
-            // Định dạng lại số với dấu phẩy
             e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Thêm dấu phẩy
         }
     });
 };
 
-// Áp dụng hàm trên cho trường nhập số tiền
 const budgetAmountInput = document.getElementById('budget-amount');
 formatCurrencyInput(budgetAmountInput);
 
-
 const saveBudgetToLocalStorage = (category, formattedAmount) => {
     const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
+    const monthKey = `${currentMonthIndex}-${currentYear}`; // Khóa xác định tháng hiện tại
+    budgets[monthKey] = budgets[monthKey] || {};
 
-    // Tách phần tên danh mục (bỏ icon)
-    const categoryName = category.includes('|') ? category.split('|')[1] : category;
+    // Loại bỏ dấu '|' trước khi lưu
+    const cleanedCategory = category.replace('|', ' '); 
+    budgets[monthKey][cleanedCategory] = formattedAmount;
 
-    budgets[categoryName] = formattedAmount; // Lưu chỉ tên danh mục và số tiền
+    // Lưu lại vào localStorage
     localStorage.setItem('budgets', JSON.stringify(budgets));
 };
 
 
-const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');  // Thêm dấu phẩy ở mỗi ba chữ số
+const loadBudgetsFromLocalStorage = () => {
+    const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
+    const monthKey = `${currentMonthIndex}-${currentYear}`; // Lấy khóa tháng hiện tại
+    const monthBudgets = budgets[monthKey] || {}; // Chỉ lấy ngân sách của tháng hiện tại
+
+    budgetList.innerHTML = '';
+    for (const [category, amount] of Object.entries(monthBudgets)) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span>${category}</span><span>${formatCurrency(amount)} VND</span>`;
+        budgetList.appendChild(li);
+    }
+
+    checkBudgetAndDisplayAlert();
 };
-// Hàm lấy ngân sách và tính toán cảnh báo
+
+
 const checkBudgetAndDisplayAlert = () => {
-    const budgets = JSON.parse(localStorage.getItem('budgets')) || {}; // Lấy ngân sách từ localStorage
-    const categoryExpenses = JSON.parse(localStorage.getItem('categoryExpenses')) || {}; // Lấy chi tiêu từ localStorage
-    const budgetAlert = document.getElementById('budget-alert'); // Vị trí hiển thị cảnh báo
+    const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
+    const categoryExpenses = JSON.parse(localStorage.getItem('categoryExpenses')) || {};
+    const monthKey = `${currentMonthIndex}-${currentYear}`;
+    const monthBudgets = budgets[monthKey] || {};
 
     let alertMessage = '';
-
-    // Lặp qua các danh mục chi tiêu trong categoryExpenses
-    for (const [category, expenseAmount] of Object.entries(categoryExpenses)) {
-        const expenseValue = parseFloat(expenseAmount.replace(/,/g, '')) || 0; // Tổng chi tiêu thực tế
-        const budgetAmount = parseFloat((budgets[category] || '0').replace(/,/g, '')) || 0; // Ngân sách đã đặt (hoặc 0 nếu không có)
-
-        if (budgetAmount > 0 && expenseValue > budgetAmount) {
-            // Nếu vượt ngân sách, tạo thông báo
-            const categoryName = category.includes('|') ? category.split('|')[1] : category; // Lấy tên danh mục
-            const icon = categoryIcons[category] || ''; // Lấy icon của danh mục
-            alertMessage += `
-                <p>${icon} <strong>${categoryName}</strong> vượt ngân sách! 
-                Chi tiêu: <strong>${expenseAmount}</strong> VND, 
+    for (const [category, budgetAmount] of Object.entries(monthBudgets)) {
+        const expenseAmount = parseFloat(categoryExpenses[monthKey]?.[category]?.replace(/,/g, '') || 0);
+        if (expenseAmount > parseFloat(budgetAmount.replace(/,/g, ''))) {
+            alertMessage += `<p>${category} vượt ngân sách! 
+                Chi tiêu: <strong>${formatCurrency(expenseAmount)}</strong> VND, 
                 Ngân sách: <strong>${formatCurrency(budgetAmount)}</strong> VND.</p>`;
         }
     }
 
-    // Hiển thị thông báo nếu có
-    if (alertMessage) {
-        budgetAlert.innerHTML = `
-            <div class="alert alert-danger">
-                ${alertMessage}
-            </div>`;
-    } else {
-        budgetAlert.innerHTML = ''; // Xóa thông báo nếu không vượt ngân sách
-    }
+    budgetAlert.innerHTML = alertMessage
+        ? `<div class="alert alert-danger">${alertMessage}</div>`
+        : '';
 };
 
 
 
-
-
-
-const loadBudgetsFromLocalStorage = () => {
-    const budgets = JSON.parse(localStorage.getItem('budgets')) || {};
-    budgetList.innerHTML = ''; // Xóa danh sách cũ
-
-    for (const [category, amount] of Object.entries(budgets)) {
-        const li = document.createElement('li');
-        li.className = 'list-group-item d-flex justify-content-between align-items-center';
-
-        // Hiển thị tên danh mục và số tiền + "VND" gọn gàng
-        li.innerHTML = `
-            <span>${category}</span>
-            <span style="white-space: nowrap;">${formatCurrency(amount)} VND</span>
-        `;
-        budgetList.appendChild(li);
-    }
-
-    checkBudgetAndDisplayAlert(); // Kiểm tra ngân sách
-};
-
-
-// Gọi kiểm tra ngân sách khi tải trang
 document.addEventListener('DOMContentLoaded', () => {
+    renderMonthHeader();
     loadBudgetsFromLocalStorage();
+    checkBudgetAndDisplayAlert();
 });
-// Xử lý khi lưu ngân sách
+
 budgetForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const category = document.getElementById('budget-category').value;
-    const amount = document.getElementById('budget-amount').value; // Dữ liệu đã được định dạng
+    const amount = document.getElementById('budget-amount').value;
     saveBudgetToLocalStorage(category, amount);
     loadBudgetsFromLocalStorage();
     budgetForm.reset();
 });
+const getLastMonthKey = () => {
+    let lastMonth = currentMonthIndex - 1;
+    let lastYear = currentYear;
+    if (lastMonth < 1) {
+        lastMonth = 12;
+        lastYear -= 1;
+    }
+    return `${lastMonth}-${lastYear}`;
+};
+const generateForecast = () => {
+    const categoryExpenses = JSON.parse(localStorage.getItem('categoryExpenses')) || {};
+    const lastMonthKey = getLastMonthKey(); // Lấy dữ liệu tháng trước
+    const lastMonthExpenses = categoryExpenses[lastMonthKey] || {};
 
-
-
-// Load ngân sách khi tải trang
-loadBudgetsFromLocalStorage();
-
-
-
-// Forecast Spending
-const forecastList = document.getElementById('forecast-list');
-
-const loadForecastFromLocalStorage = () => {
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    const forecast = {};
-
-    transactions.forEach(tx => {
-        if (tx.type === 'expense' && tx.amount) {
-            const amount = parseFloat(String(tx.amount).replace(/,/g, '')) || 0; // Đảm bảo tx.amount là chuỗi
-            forecast[tx.category] = (forecast[tx.category] || 0) + amount;
-        }
-    });
-
+    const forecastList = document.getElementById('forecast-list');
     forecastList.innerHTML = '';
-    for (const [category, total] of Object.entries(forecast)) {
-        const average = (total / 12).toFixed(2).toLocaleString('en-US');
+
+    for (const [category, amount] of Object.entries(lastMonthExpenses)) {
+        const expenseAmount = parseFloat(amount.replace(/,/g, '')) || 0;
+
+        // Tùy chỉnh công thức dự báo (ở đây giữ nguyên mức chi tiêu tháng trước)
+        const forecastAmount = expenseAmount; 
+
         const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.textContent = `${category.split('|')[1]}: Trung bình ${average} VND/tháng`;
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span>${category}</span><span>${formatCurrency(forecastAmount)} VND</span>`;
         forecastList.appendChild(li);
     }
 };
 
-loadForecastFromLocalStorage();
 
-// Goals Management
-const goalForm = document.getElementById('goal-form');
-const goalList = document.getElementById('goal-list');
 
-const saveGoalToLocalStorage = (name, formattedAmount) => {
-    const goals = JSON.parse(localStorage.getItem('goals')) || [];
-    goals.push({ name, amount: formattedAmount }); // Lưu dữ liệu đã định dạng
-    localStorage.setItem('goals', JSON.stringify(goals));
-};
 
-const loadGoalsFromLocalStorage = () => {
-    const goals = JSON.parse(localStorage.getItem('goals')) || [];
-    goalList.innerHTML = '';
-    goals.forEach(goal => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.textContent = `${goal.name}: ${goal.amount} VND`;
-        goalList.appendChild(li);
-    });
-};
-
-goalForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('goal-name').value;
-    const amount = document.getElementById('goal-amount').value; // Dữ liệu đã được định dạng
-    saveGoalToLocalStorage(name, amount);
-    loadGoalsFromLocalStorage();
-    goalForm.reset();
-});
-
-// Định dạng trường nhập số tiền cho mục tiêu
-const goalAmountInput = document.getElementById('goal-amount');
-formatCurrencyInput(goalAmountInput);
-
-// Load mục tiêu khi tải trang
-loadGoalsFromLocalStorage();
-
+// Gọi `checkBudgetAndDisplayAlert` khi cần
 document.addEventListener('DOMContentLoaded', () => {
-    loadBudgetsFromLocalStorage(); // Hiển thị ngân sách
-    checkBudgetAndDisplayAlert(); // Kiểm tra và hiển thị cảnh báo
+    renderMonthHeader();
+    loadBudgetsFromLocalStorage();
+    checkBudgetAndDisplayAlert(); // Kiểm tra cảnh báo khi tải trang
+    generateForecast();
 });
 
+const switchMonth = (direction) => {
+    currentMonthIndex += direction;
+    if (currentMonthIndex < 1) {
+        currentMonthIndex = 12;
+        currentYear -= 1;
+    } else if (currentMonthIndex > 12) {
+        currentMonthIndex = 1;
+        currentYear += 1;
+    }
 
-
-budgetForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const category = document.getElementById('budget-category').value; // Lấy danh mục đầy đủ (có icon)
-    const amount = document.getElementById('budget-amount').value;
-
-    saveBudgetToLocalStorage(category, amount); // Gọi hàm lưu ngân sách (tự tách icon)
-    loadBudgetsFromLocalStorage(); // Tải lại danh sách ngân sách
-    budgetForm.reset(); // Reset form
-});
-
+    renderMonthHeader(); // Cập nhật tiêu đề tháng
+    loadBudgetsFromLocalStorage(); // Tải ngân sách cho tháng mới
+    checkBudgetAndDisplayAlert(); // Cập nhật cảnh báo
+    generateForecast();
+};
 
 
     </script>
