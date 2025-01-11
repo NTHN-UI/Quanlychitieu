@@ -2,18 +2,27 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-use App\Http\Controllers\ExpenseController;
-
-Route::get('/expenses', [ExpenseController::class, 'index']);
-Route::post('/expenses', [ExpenseController::class, 'store']);
+Route::get('/bugdget.blade.php', function () {
+    return view('bugdget');
+});
+Route::get('/dashboard.blade.php', function () {
+    return view('dashboard');
+});
+Route::get('/expense.blade.php', function () {
+    return view('expense');
+});
+Route::get('/login.blade.php', function () {
+    return view('login');
+});
+Route::get('/register.blade.php', function () {
+    return view('register');
+});
+Route::get('/remind.blade.php', function () {
+    return view('remind');
+});
+Route::get('/setting.blade.php', function () {
+    return view('setting');
+});
+Route::get('/transaction.blade.php', function () {
+    return view('transaction');
+});
