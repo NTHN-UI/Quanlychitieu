@@ -285,6 +285,8 @@
             <li class="nav-item"><a href="transaction.blade.php" class="nav-link active">Sổ giao dịch</a></li>
             <li class="nav-item"><a href="remind.blade.php" class="nav-link">Nhắc nhở</a></li>
             <li class="nav-item"><a href="bugdget.blade.php" class="nav-link ">Ngân sách</a></li>
+            <li class="nav-item"><a href="courses.blade.php" class="nav-link ">Khoá học</a></li>
+            <li class="nav-item"><a href="courses.blade.php" class="nav-link ">Khoá học</a></li>
             <li class="nav-item"><a href="setting.blade.php" class="nav-link">Cài đặt</a></li>
         </ul>
     </nav>

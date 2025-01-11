@@ -8,7 +8,6 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: url('https://source.unsplash.com/1920x1080/?finance,money') no-repeat center center/cover;
             display: flex;
             justify-content: center;
             align-items: center;
